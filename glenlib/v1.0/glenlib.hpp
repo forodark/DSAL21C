@@ -68,7 +68,7 @@
 #include <fstream>
 #include <cstdint>
 
-namespace gc {
+namespace gl {
 
 //==================================================================================================================
 // Max Defaults (Can be configured)
@@ -108,13 +108,10 @@ namespace gc {
 #define KEYGEN "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!#$%&'()*+,-./:;<=>?@[]^_`{|}~ "
 
 //==================================================================================================================
-// Function Prototypes (structure based are commented out)
-void printLine(int type);
+// Function Prototypes (empty for now)
 
 //==================================================================================================================
 // Print Line Functions
-
-
 
 // Sample: printLineWidth(10); 
 void printLineWidth(int width) { //print line with custom width
@@ -198,9 +195,6 @@ void printCentered(int field_width, const std::string& format, ...) {
 
     int total_padding = field_width - length;
 
-
-
-    // Calculate padding based on field_width and the formatted string length
     int left_padding = total_padding / 2;
     int right_padding = total_padding / 2;
 
@@ -208,22 +202,12 @@ void printCentered(int field_width, const std::string& format, ...) {
         right_padding++;
     }
 
-    // std::cout << field_width << std::endl;
-    // std::cout << length << std::endl;
-
-    // std::cout << total_padding << std::endl;
-    // std::cout << left_padding << std::endl;
-    // std::cout << right_padding << std::endl;
-
-    // Print the left padding
     for (int i = 0; i < left_padding; ++i) {
         std::cout << ' ';
     }
 
-    // Print the formatted string
     vprintf(c_format, args);
 
-    // Print the right padding
     for (int i = 0; i < right_padding; ++i) {
         std::cout << ' ';
     }
