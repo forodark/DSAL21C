@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "m:/GitHub/DSAL21C/glencryppt",
-      "program": "m:/GitHub/DSAL21C/glencryppt/build/Debug/outDebug",
+      "cwd": "m:/GitHub/DSAL21C/Programming Exercises 1",
+      "program": "m:/GitHub/DSAL21C/Programming Exercises 1/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
