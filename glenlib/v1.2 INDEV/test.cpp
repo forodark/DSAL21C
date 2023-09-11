@@ -71,7 +71,9 @@ person people[] = {
     {7, "Jill", 13.13f, 14.14, 'i', true},
     {8, "Jim", 15.15f, 16.16, 'j', false},
     {9, "Joe", 17.17f, 18.18, 'k', true},
-    {10, "Jill", 19.19f, 20.20, 'l', false}
+    {10, "Jill", 19.19f, 20.20, 'l', false},
+    {11, "Jim", 21.21f, 22.22, 'm', true},
+    {12, "Joe", 23.23f, 24.24, 'n', false}
 };
 
 table TEST[] = {

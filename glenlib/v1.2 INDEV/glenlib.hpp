@@ -11,6 +11,8 @@
 //==================================================================================================================
 // latest Changes (v1.2)
 //  - Fixed bug where menu titles caused incorrect choice selection
+//  - Fixed bug where table pages printed the wrong data
+//  - Fixed spacing bug in table pages
 // Changes (v1.1)
 //  - Min Max parameter for int, float, double
 //  - Fixed bug in creating table columns with TCOL()
@@ -1262,7 +1264,8 @@ void printTable(const std::string& title, table* data) {
                     break;
                 }
                 else {
-                    invalidChoice("Invalid choice.", table_width);
+                    invalidChoice(INVALID_CHOICE, table_width);
+                    table_row_counter = page*TABLE_PAGE_LENGTH;
                     continue;
                 }
                 
@@ -1273,7 +1276,8 @@ void printTable(const std::string& title, table* data) {
                     break;
                 }
                 else {
-                    invalidChoice("Invalid choice.", table_width);
+                    invalidChoice(INVALID_CHOICE, table_width);
+                    table_row_counter = page*TABLE_PAGE_LENGTH;
                     continue;
                 }
             case 0:
@@ -1281,7 +1285,8 @@ void printTable(const std::string& title, table* data) {
                 return;
                 break;
             default:
-                invalidChoice("Invalid choice.", table_width);
+                invalidChoice(INVALID_CHOICE, table_width);
+                table_row_counter = page*TABLE_PAGE_LENGTH;
                 continue; 
         }
 
