@@ -3,14 +3,14 @@
 // ██╔════╝ ██║     ██╔════╝████╗  ██║██║     ██║██╔══██╗ ▄▄  █▀▀█  █▄▄█  █▄▄█
 // ██║  ███╗██║     █████╗  ██╔██╗ ██║██║     ██║██████╔╝ ▀▀  █  █  █     █   
 // ██║   ██║██║     ██╔══╝  ██║╚██╗██║██║     ██║██╔══██╗
-// ╚██████╔╝███████╗███████╗██║ ╚████║███████╗██║██████╔╝  v1.0
+// ╚██████╔╝███████╗███████╗██║ ╚████║███████╗██║██████╔╝  v1.1
 //  ╚═════╝ ╚══════╝╚══════╝╚═╝  ╚═══╝╚══════╝╚═╝╚═════╝   by Glen Angelo Bautista                                       
 //==================================================================================================================
 // This is my header file containing a bunch of useful functions that I made to make my life easier. The features
 // available aren't limited to encryption though. Please explore the file to learn more.
 //==================================================================================================================
 // Latest Changes (v1.1)
-//  - Min Max parameter for int, float, double\
+//  - Min Max parameter for int, float, double
 //  - Fixed bug in creating table columns with TCOL()
 //  - Added option to have no title in menus and tables
 //  - Removed leftover debugging statements
