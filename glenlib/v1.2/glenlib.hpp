@@ -9,7 +9,12 @@
 // This is my header file containing a bunch of useful functions that I made to make my life easier. The features
 // available aren't limited to encryption though. Please explore the file to learn more.
 //==================================================================================================================
-// Latest Changes (v1.1)
+// latest Changes (v1.2)
+//  - Fixed bug where menu titles caused incorrect choice selection
+//  - Fixed bug where table pages printed the wrong data
+//  - Fixed spacing bug in table pages
+//  - temporarily removed run and compile functions that use unistd.h
+// Changes (v1.1)
 //  - Min Max parameter for int, float, double
 //  - Fixed bug in creating table columns with TCOL()
 //  - Added option to have no title in menus and tables
@@ -49,7 +54,7 @@
 //  - Use std::string instead of char*
 //  - Added and change many default configurations
 // Upcoming Changes
-//	- None so far
+//	- add the run and compile functions again
 //==================================================================================================================
 
 #ifndef GLENLIB_HPP
@@ -62,7 +67,6 @@
 #include <ctime>
 #include <cstdarg>
 #include <Windows.h>  //
-#include <unistd.h> //
 #include <cstddef>
 #include <cmath>
 #include <cstring>
@@ -752,73 +756,6 @@ bool getBool(const std::string& prompt, const char default_choice_0 = '0', const
 }
 
 //==================================================================================================================
-// Program Run & Compile Functions
-char original_dir[MAX_STRING_LENGTH];
-
-// Sample: runProgram("LRT/", "Bautista_LRT.exe");
-void runProgram(const std::string& program, const std::string& path = ".") {
-    if (getcwd(original_dir, sizeof(original_dir)) == nullptr) {
-        printColor(RED, "Error: Could not get current directory.\n");
-        printLine();
-        waitEnter();
-        return;
-    }
-
-    if (chdir(path.c_str()) != 0) {
-        printColor(RED, "Error: Could not find directory at %s.\n", path.c_str());
-        printLine();
-        waitEnter();
-        return;
-    }
-
-    system("cls");
-    system(program.c_str());
-    system("cls");
-
-    chdir(original_dir);
-}
-
-// Sample: compileRunProgram("LRT/", "Bautista_LRT");
-void compileRunProgram(const std::string& program, const std::string& path = ".") {
-    if (getcwd(original_dir, sizeof(original_dir)) == nullptr) {
-        printColor(RED, "Error: Could not get current directory.\n");
-        printLine();
-        waitEnter();
-        return;
-    }
-
-    if (chdir(path.c_str()) != 0) {
-        printColor(RED, "Error: Could not find directory at %s.\n", path.c_str());
-        printLine();
-        waitEnter();
-        return;
-    }
-    std::string compile_command = "g++ " + program + " -o " + program;
-    std::cout << std::endl << "Compiling... Please Wait." << std::endl << std::endl;
-    system(compile_command.c_str());
-    system("cls");
-    std::string run_command = getFileName(program) +".exe";
-    system(run_command.c_str());
-    system("cls");
-    chdir(original_dir);
-}
-
-void run(const std::string& program, const std::string& path = ".") {
-    if (getFileExtension(program) == "cpp") {
-        compileRunProgram(program, path);
-    }
-    else if (getFileExtension(program) == "exe") {
-        runProgram(program, path);
-    }
-    else {
-        printColor(RED, "Error: Invalid file type '%s'.\n", getFileExtension(program).c_str());
-        printLine();
-        waitEnter();
-        return;
-    }
-}
-
-//==================================================================================================================
 // Menu Functions
 
 struct menu {
@@ -839,7 +776,10 @@ int showMenu_findPosition(menu* options, int option) {
     int result = 0;
     int valid_options = 0;
     while(valid_options != option) {
-        if (showMenu_functionCheck(options[result], showMenu_subtitle)) {
+        if (showMenu_functionCheck(options[result], showMenu_title)) {
+            result++;
+        }
+        else if (showMenu_functionCheck(options[result], showMenu_subtitle)) {
             result++;
         }
         else if (showMenu_functionCheck(options[result], showMenu_line)) {
@@ -1257,7 +1197,8 @@ void printTable(const std::string& title, table* data) {
                     break;
                 }
                 else {
-                    invalidChoice("Invalid choice.", table_width);
+                    invalidChoice(INVALID_CHOICE, table_width);
+                    table_row_counter = page*TABLE_PAGE_LENGTH;
                     continue;
                 }
                 
@@ -1268,7 +1209,8 @@ void printTable(const std::string& title, table* data) {
                     break;
                 }
                 else {
-                    invalidChoice("Invalid choice.", table_width);
+                    invalidChoice(INVALID_CHOICE, table_width);
+                    table_row_counter = page*TABLE_PAGE_LENGTH;
                     continue;
                 }
             case 0:
@@ -1276,7 +1218,8 @@ void printTable(const std::string& title, table* data) {
                 return;
                 break;
             default:
-                invalidChoice("Invalid choice.", table_width);
+                invalidChoice(INVALID_CHOICE, table_width);
+                table_row_counter = page*TABLE_PAGE_LENGTH;
                 continue; 
         }
 
