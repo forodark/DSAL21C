@@ -29,6 +29,10 @@
 //  - extractDecimal now returns -1 if none found
 //  - fixed bug in input functions where several continue statements were missing
 //  - accepted chars for getChar
+//  - table shows N/A if no value found
+//  - changed table column constructor from TCOL to COL
+//  - table truncates header if it exceeds the column width
+//  - better rand function
 // Changes (v1.2)
 //  - Fixed bug where menu titles caused incorrect choice selection
 //  - Fixed bug where table pages printed the wrong data
@@ -75,10 +79,6 @@
 //  - Added and change many default configurations
 // Upcoming Changes
 //	- add the run and compile functions again
-//  - fix titles to make use of printTitle
-//  - table shows N/A if no value found
-//  - table truncates header if it exceeds the column width
-//  - better rand function
 //==================================================================================================================
 
 #ifndef GLENLIB_HPP
@@ -333,6 +333,17 @@ void printTitle(const std::string& title) {
 
 //==================================================================================================================
 // Miscelaneous Functions
+
+int random(int min, int max) {
+    return rand() % (max - min + 1) + min;
+}
+
+double random(double min, double max, int precision = 2) {
+    double result = (double)rand() / RAND_MAX * (max - min) + min;
+    double multiplier = pow(10, precision);
+    return std::round(result * multiplier) / multiplier;
+}
+
 void sleep(int seconds) {
     std::this_thread::sleep_for(std::chrono::seconds(seconds));
 }
@@ -1138,7 +1149,7 @@ struct table {
     size_t offset;
 };
 
-#define TCOL(HEADER, SOURCE, MEMBER, FORMAT) {HEADER, &SOURCE[0].MEMBER, sizeof(SOURCE)/sizeof(SOURCE[0]), sizeof(SOURCE[0]), FORMAT, offsetof(typeof(*(SOURCE)), MEMBER)}
+#define COL(HEADER, SOURCE, MEMBER, FORMAT) {HEADER, &SOURCE[0].MEMBER, sizeof(SOURCE)/sizeof(SOURCE[0]), sizeof(SOURCE[0]), FORMAT, offsetof(typeof(*(SOURCE)), MEMBER)}
 #define END_TABLE {"end_table", NULL, 0, 0, "", 0}
 
 void printTableFull(const std::string& title, table* data) {
@@ -1165,7 +1176,14 @@ void printTableFull(const std::string& title, table* data) {
     std::cout << "|";
     for (int i = 0; i < num_columns; i++) {
         int column_width = extractNumber(data[i].format);
+        
+        if (data[i].header.length() > column_width) {
+            print(truncate(data[i].header, column_width));
+        }
+        else {
         printCentered(column_width, data[i].header);
+        }
+
         std::cout << "|";
     }
     std::cout << std::endl;
@@ -1243,7 +1261,14 @@ void printTable(const std::string& title, table* data) {
         std::cout << "|";
         for (int i = 0; i < num_columns; i++) {
             int column_width = extractNumber(data[i].format);
+
+            if (data[i].header.length() > column_width) {
+                print(truncate(data[i].header, column_width));
+            }
+            else {
             printCentered(column_width, data[i].header);
+            }
+
             std::cout << "|";
         }
         std::cout << std::endl;
@@ -1275,7 +1300,7 @@ void printTable(const std::string& title, table* data) {
                     buffer = convertString((*reinterpret_cast<bool*>(address) ? "True" : "False"));
                 }
                 else {
-                    buffer = "Unknown";
+                    buffer = "N/A";
                 }
 
                 std::cout << " " << formatString(buffer, extractNumber(data[j].format) - 1) << "|";

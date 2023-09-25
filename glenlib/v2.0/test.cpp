@@ -77,18 +77,17 @@ person people[] = {
 };
 
 table TEST[] = {
-    TCOL("ID", people, id, "9d"),
-    TCOL("Name", people, name, "12s"),
-    TCOL("Float", people, floatval, "12f"),
-    TCOL("Double", people, doubleval, "12lf"),
-    TCOL("Char", people, charval, "12c"),
-    TCOL("Bool", people, boolval, "12b"),
+    COL("ID", people, id, "9d"),
+    COL("Name", people, name, "12s"),
+    COL("Float", people, floatval, "12f"),
+    COL("Double", people, doubleval, "12lf"),
+    COL("Char", people, charval, "12c"),
+    COL("Bool", people, boolval, "12b"),
     END_TABLE
 };
 
 int main() {
-    println("TEST");
-    char test  = getChar("Enter char: ", "abcd1234");
-    println(test);
-    return 0;
+    for(int i = 0; i < 12; i++) {
+        cout << random(1.0, 10.0, 1) << endl;
+    }
 }
