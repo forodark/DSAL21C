@@ -8,7 +8,8 @@ using namespace gl;
 //Get the PRODUCT of the 5 numbers.
 int main() {
     double product = 1;
+    cout << color(GREEN, "Enter 5 numbers: ") << endl;
     for(int i = 0; i < 5; i++) 
-        product *= getDouble("Enter a number [" + to_string(i+1) + "/5]: ");
-    cout << color(GREEN, "Product: ") << product << endl;
+        product *= getDouble("[" + to_string(i+1) + "/5]: ");
+    cout << color(GREEN, "The Product is: ") << fixed << setprecision(2) << product << endl;
 }

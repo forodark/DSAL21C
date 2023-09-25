@@ -8,9 +8,10 @@ using namespace gl;
 //Get the SUM and AVERAGE of the 10 numbers.
 int main() {
     double sum = 0;
+    cout << color(GREEN, "Enter 10 numbers: ") << endl;
     for(int i = 0; i < 10; i++)
-        sum += getDouble("Enter a number [" + to_string(i+1) + "/10]: ");
+        sum += getDouble("[" + to_string(i+1) + "/10]: ");
     double average = sum/10;
-    cout << color(GREEN, "Sum: ") << sum << endl;
-    cout << color(GREEN, "Average: ") << average << endl;
+    cout << color(GREEN, "The Sum is: ") << fixed << setprecision(2) << sum << endl;
+    cout << color(GREEN, "The Average is: ") << fixed << setprecision(2) << average << endl;
 }
