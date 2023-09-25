@@ -3,13 +3,33 @@
 // ██╔════╝ ██║     ██╔════╝████╗  ██║██║     ██║██╔══██╗ ▄▄  █▀▀█  █▄▄█  █▄▄█
 // ██║  ███╗██║     █████╗  ██╔██╗ ██║██║     ██║██████╔╝ ▀▀  █  █  █     █   
 // ██║   ██║██║     ██╔══╝  ██║╚██╗██║██║     ██║██╔══██╗
-// ╚██████╔╝███████╗███████╗██║ ╚████║███████╗██║██████╔╝  v1.2
+// ╚██████╔╝███████╗███████╗██║ ╚████║███████╗██║██████╔╝  v2.0
 //  ╚═════╝ ╚══════╝╚══════╝╚═╝  ╚═══╝╚══════╝╚═╝╚═════╝   by Glen Angelo Bautista                                       
 //==================================================================================================================
 // This is my header file containing a bunch of useful functions that I made to make my life easier. The features
 // available aren't limited to encryption though. Please explore the file to learn more.
 //==================================================================================================================
-// latest Changes (v1.2)
+// Latest changes (v2.0)
+//  - TLDR: i ported the updates from glenlib java to c++
+//  - unified printLine and printLineWidth into line
+//  - changed line macro to ln & lnw()
+//  - changed legacy printColor to Win::color
+//  - new printColor or color function using ansi codes
+//  - added nl() to print new line
+//  - added printTitle()
+//  - added println and print that mimics java's print functions
+//  - added clear function
+//  - added sleep function
+//  - added additional overloaded function for invalidChoice, renamed to invalid
+//  - added additional overloaded function for exitProgram, added another alias quit
+//  - fixed unintentional bug where truncate would call trimZeros
+//  - added setPrecision (calls formatString)
+//  - added a setter for default_line_width
+//  - applied the new clear function on invalid inputs
+//  - extractDecimal now returns -1 if none found
+//  - fixed bug in input functions where several continue statements were missing
+//  - accepted chars for getChar
+// Changes (v1.2)
 //  - Fixed bug where menu titles caused incorrect choice selection
 //  - Fixed bug where table pages printed the wrong data
 //  - Fixed spacing bug in table pages
@@ -55,6 +75,10 @@
 //  - Added and change many default configurations
 // Upcoming Changes
 //	- add the run and compile functions again
+//  - fix titles to make use of printTitle
+//  - table shows N/A if no value found
+//  - table truncates header if it exceeds the column width
+//  - better rand function
 //==================================================================================================================
 
 #ifndef GLENLIB_HPP
@@ -78,6 +102,8 @@
 #include <vector>
 #include <fstream>
 #include <cstdint>
+#include <chrono>
+#include <thread>
 
 namespace gl {
 
@@ -99,10 +125,11 @@ namespace gl {
 
 //Default Messages
 #define INVALID_CHOICE "Invalid Choice.\n"
+#define EXIT_PROGRAM "Exiting Program.\n"
 
 //Line Defaults
-#define LINE_WIDTH 31
-#define LINE_WIDTH_LONG 63
+static int default_line_width = 31;
+#define INVALID_CLEAR 4
 
 //Input Defaults
 #define INPUT_PROMPT "Input: "
@@ -128,75 +155,131 @@ namespace gl {
 #define KEYGEN "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!#$%&'()*+,-./:;<=>?@[]^_`{|}~ "
 
 //==================================================================================================================
-// Function Prototypes (empty for now)
+// Setter functions
+
+void setLineWidth(int width) {
+    default_line_width = width;
+}
 
 //==================================================================================================================
 // Print Line Functions
 
-// Sample: printLineWidth(10); 
-void printLineWidth(int width) { //print line with custom width
+// Sample: line(10); 
+void line(int width) { //print line with custom width
     for (int i = 0; i < width; i++) {
         printf("-");
     }
     printf("\n");
 }
 
-// Sample: printLine(0);
-void printLine(int type = 0) { //print lines in different styles
-	switch(type) {
-		case 0: //normal (length: 31)
-			printLineWidth(LINE_WIDTH);
-			break;
-		case 1: //fancy
-			printf("->->-~-~-~-=-=-=-=-=-~-~-~-<-<-\n");
-			break;
-		case 2: //long (length: 63)
-			printLineWidth(LINE_WIDTH_LONG);
-			break;
-		default:
-			printLineWidth(LINE_WIDTH);
-			break;
-	}
+void line() { //print lines in different styles
+	line(default_line_width);
 }
 
-#define line(width) std::string(width, '-')
+void nl() {
+    printf("\n");
+}
+
+#define lnw(width) std::string(width, '-') + '\n'
+#define ln std::string(default_line_width, '-') + '\n'
 
 //==================================================================================================================
 // Color Macros & Print Functions
-#define BLACK 0
-#define RED FOREGROUND_RED | FOREGROUND_INTENSITY
-#define GREEN FOREGROUND_GREEN | FOREGROUND_INTENSITY
-#define BLUE FOREGROUND_BLUE | FOREGROUND_INTENSITY
-#define YELLOW FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY
-#define MAGENTA FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_INTENSITY
-#define CYAN FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY
-#define WHITE FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY
 
-// Sample: printColor(RED, "Error %d", number);
-void printColor(int text_color, const std::string& format, va_list args) {
-    // Get the current console handle
-    HANDLE h_console = GetStdHandle(STD_OUTPUT_HANDLE);
-
-    // Store the current console attributes
-    CONSOLE_SCREEN_BUFFER_INFO console_info;
-    GetConsoleScreenBufferInfo(h_console, &console_info);
-    WORD original_attr = console_info.wAttributes;
-
-    // Set the text color
-    SetConsoleTextAttribute(h_console, static_cast<WORD>(text_color));
-    
-    // Print the formatted text
-    vprintf(format.c_str(), args);
-    
-    // Reset the color
-    SetConsoleTextAttribute(h_console, original_attr);
+template <typename T>
+void println(const T& value) {
+    std::cout << value << std::endl;
 }
 
-void printColor(int text_color, const std::string& format, ...) {
+template <typename T>
+void print(const T& value) {
+    std::cout << value;
+}
+
+class Win {
+public:
+    static const int BLACK;
+    static const int RED;
+    static const int GREEN;
+    static const int BLUE;
+    static const int YELLOW;
+    static const int MAGENTA;
+    static const int CYAN;
+    static const int WHITE;
+
+    static void color(int text_color, const std::string& format, ...) {
+        va_list args;
+        va_start(args, format);
+        setTextColor(text_color);
+        vprintf(format.c_str(), args);
+        va_end(args);
+        resetColor();
+    }
+
+private:
+    static HANDLE h_console_;
+    static CONSOLE_SCREEN_BUFFER_INFO original_info_;
+
+    static void setTextColor(int text_color) {
+        h_console_ = GetStdHandle(STD_OUTPUT_HANDLE);
+        GetConsoleScreenBufferInfo(h_console_, &original_info_);
+        SetConsoleTextAttribute(h_console_, static_cast<WORD>(text_color));
+    }
+
+    static void resetColor() {
+        SetConsoleTextAttribute(h_console_, original_info_.wAttributes);
+    }
+};
+
+const int Win::BLACK = 0;
+const int Win::RED = FOREGROUND_RED | FOREGROUND_INTENSITY;
+const int Win::GREEN = FOREGROUND_GREEN | FOREGROUND_INTENSITY;
+const int Win::BLUE = FOREGROUND_BLUE | FOREGROUND_INTENSITY;
+const int Win::YELLOW = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY;
+const int Win::MAGENTA = FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_INTENSITY;
+const int Win::CYAN = FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY;
+const int Win::WHITE = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY;
+
+HANDLE Win::h_console_ = GetStdHandle(STD_OUTPUT_HANDLE);
+CONSOLE_SCREEN_BUFFER_INFO Win::original_info_;
+
+
+const std::string RESET = "\x1B[0m";
+const std::string BLACK = "\x1B[30m";
+const std::string RED = "\x1B[31m";
+const std::string GREEN = "\x1B[32m";
+const std::string YELLOW = "\x1B[33m";
+const std::string BLUE = "\x1B[34m";
+const std::string PURPLE = "\x1B[35m";
+const std::string CYAN = "\x1B[36m";
+const std::string WHITE = "\x1B[37m";
+
+void printColor(const std::string& color, const std::string& format, ...) {
     va_list args;
     va_start(args, format);
-    printColor(text_color, format, args);
+    char buffer[256];
+    vsnprintf(buffer, sizeof(buffer), format.c_str(), args);
     va_end(args);
+    std::string formatted_text(buffer);
+    std::cout << color << formatted_text << RESET;
+}
+
+std::string color(const std::string& color, const std::string& format, ...) {
+    va_list args;
+    va_start(args, format);
+    char buffer[256];
+    vsnprintf(buffer, sizeof(buffer), format.c_str(), args);
+    va_end(args);
+    std::string formatted_text(buffer);
+    return (color + formatted_text + RESET);
+}
+
+void color(const std::string& color) {
+    std::cout << color;
+}
+
+void color() {
+    std::cout << RESET;
 }
 
 
@@ -237,8 +320,35 @@ void printCentered(int field_width, const std::string& format, ...) {
     va_end(args);
 }
 
+void printTitle(int width, const std::string& title) {
+    line(width);
+    printCentered(width, title);
+    nl();
+    line(width);
+}
+
+void printTitle(const std::string& title) {
+    printTitle(default_line_width, title);
+}
+
 //==================================================================================================================
 // Miscelaneous Functions
+void sleep(int seconds) {
+    std::this_thread::sleep_for(std::chrono::seconds(seconds));
+}
+
+void clear() {
+    system("cls");
+}
+
+void clear(int lines) {
+    for (int i = 0; i < lines; ++i) {
+        std::cout << "\033[2K";
+        std::cout << "\033[A";
+    }
+    std::cout << "\033[2K";
+    std::cout.flush();
+}
 
 // Sample: getCharPos("Hello", 'e'); | Result: 1
 int getCharPos(const std::string& str, char ch) {
@@ -259,41 +369,49 @@ void waitEnter() { //waits for user to press enter
     }
 }
 
-void invalidChoice() {
-    printColor(RED, "Invalid choice.\n"); //returns invalid choice
-    printLine();
+// Sample: invalid("Invalid choice", 10);
+void invalid(const std::string& message, int width) { //returns invalid choice with custom parameters
+    Win::color(Win::RED, message);
+    line(width);
     waitEnter();
+    clear(INVALID_CLEAR);
 }
 
-// Sample: invalidProgram("Invalid choice", 10);
-void invalidChoice(const std::string& message, int width) { //returns invalid choice with custom parameters
-    printColor(RED, message);
-    printLineWidth(width);
-    waitEnter();
+void invalid(const std::string& message) {
+    invalid(message, default_line_width);
 }
 
-
-void exitProgram() { //exits program
-    system("cls");
-    printLine();
-    std::cout << "Exiting Program..." << std::endl;
-    printLine();
-    std::exit(0);
+void invalid() {
+    invalid(INVALID_CHOICE, default_line_width);
 }
 
 //Sample: exitProgram("BYE!", 10);
 void exitProgram(const std::string& message, int width) { //exits program with custom parameters
     system("cls");
-    printLineWidth(width);
+    line(width);
     std::cout << message << std::endl;
-    printLineWidth(width);
+    line(width);
     exit(0);
 }
+
+void exitProgram(const std::string& message) { //exits program
+    exitProgram(message, default_line_width);
+}
+
+void exitProgram() { //exits program
+    exitProgram(EXIT_PROGRAM, default_line_width);
+}
+
+//aliases for exitProgram
+void quit(const std::string& message, int width) {exitProgram(message, width);}
+void quit(const std::string& message) {exitProgram(message);}
+void quit() {exitProgram();}
+
 
 //==================================================================================================================
 // Data Type & String Formatting Functions
 		
-// Sample: convertString(100, "int", output); | Result: "100"
+// Sample: convertString(100); | Result: "100"
 template <typename T>
 std::string convertString(const T& value) {
     std::stringstream ss;
@@ -337,7 +455,7 @@ std::string truncate(const std::string& inputString, int width) {
         return inputString;
     }
 
-    std::string input_buffer = trimZeros(inputString);
+    std::string input_buffer = inputString;
 
     if (static_cast<int>(input_buffer.length()) > width) {
         std::string truncated = input_buffer.substr(0, static_cast<std::string::size_type>(width - 2)) + "..";
@@ -366,6 +484,11 @@ std::string formatString(const T& value, int width = 0, int precision = -1) {
     ss << value;
     
     return truncate(ss.str(), width);
+}
+
+template <typename T>
+std::string setPrecision(const T& value, int precision) {
+    return formatString(value, 0, precision);
 }
 
 // Sample: typeFromFormat("%s"); | Result: "string"
@@ -414,7 +537,7 @@ int extractDecimal(const std::string& str) {
     size_t decimalPos = str.find('.');
     
     if (decimalPos == std::string::npos) {
-        return 0;
+        return -1;
     }
 
     int result = 0;
@@ -553,22 +676,20 @@ void input(int& output, const std::string& prompt, int min = MIN_INT, int max = 
         
 
         if (input.empty()) {
-            printColor(RED,"Invalid input. Input must not be empty.\n");
-            printLine();
+            invalid("Invalid input. Input must not be empty.\n");
         }
         else {
             try {
                 int temp = std::stoi(input);
                 if (temp < min || temp > max) {
-                    printColor(RED,"Invalid input. Input must be between " + std::to_string(min) + " and " + std::to_string(max) + ".\n");            
-                    printLine();
+                    invalid("Invalid input. Input must be between " + std::to_string(min) + " and " + std::to_string(max) + ".\n");
+                    continue;
                 }
                 output = temp;
                 return;
             }
             catch (const std::invalid_argument&) {
-                printColor(RED,"Invalid input. Input must be an integer.\n");
-                printLine();
+                invalid("Invalid input. Input must be an integer.\n");
             }
         }
     }
@@ -582,22 +703,20 @@ void input(float& output, const std::string& prompt, float min = MIN_FLOAT, floa
         std::getline(std::cin, input);
         
         if (input.empty()) {
-            printColor(RED,"Invalid input. Input must not be empty.\n");
-            printLine();
+            invalid("Invalid input. Input must not be empty.\n");
         }
         else {
             try {
                 float temp = std::stof(input);
                 if (temp < min || temp > max) {
-                    printColor(RED,"Invalid input. Input must be between " + std::to_string(min) + " and " + std::to_string(max) + ".\n");            
-                    printLine();
+                    invalid("Invalid input. Input must be between " + std::to_string(min) + " and " + std::to_string(max) + ".\n");            
+                    continue;
                 }
                 output = temp;
                 return;
             }
             catch (const std::invalid_argument&) {
-                printColor(RED,"Invalid input. Please enter a valid float.\n");
-                printLine();
+                invalid("Invalid input. Please enter a valid float.\n");
             }
         }
     }
@@ -612,22 +731,20 @@ void input(double& output, const std::string& prompt, double min = MIN_DOUBLE, d
         std::getline(std::cin, input);
         
         if (input.empty()) {
-            printColor(RED,"Invalid input. Input must not be empty.\n");
-            printLine();
+            invalid("Invalid input. Input must not be empty.\n");
         }
         else {
             try {
                 double temp = std::stod(input);
                 if (temp < min || temp > max) {
-                    printColor(RED,"Invalid input. Input must be between " + std::to_string(min) + " and " + std::to_string(max) + ".\n");            
-                    printLine();
+                    invalid("Invalid input. Input must be between " + std::to_string(min) + " and " + std::to_string(max) + ".\n");            
+                    continue;
                 }
                 output = temp;
                 return;
             }
             catch (const std::invalid_argument&) {
-                printColor(RED,"Invalid input. Please enter a valid double.\n");
-                printLine();
+                invalid("Invalid input. Please enter a valid double.\n");
             }
         }
     }
@@ -635,21 +752,23 @@ void input(double& output, const std::string& prompt, double min = MIN_DOUBLE, d
 
 
 // Function for character input
-void input(char& output, const std::string& prompt) {
+void input(char& output, const std::string& prompt, const std::string& accepted = CHAR_LIB) {
     while (true) {
         std::cout << prompt;
         std::string input;
         std::getline(std::cin, input);
         
         if (input.empty()) {
-            printColor(RED,"Invalid input. Input must not be empty.\n");
-            printLine();
+            invalid("Invalid input. Input must not be empty.\n");
         }
         else if (input.length() != 1) {
-            printColor(RED,"Invalid input. Input must be a single character.\n");
-            printLine();
+            invalid("Invalid input. Input must be a single character.\n");
         }
         else {
+            if (accepted.find(input[0]) == std::string::npos) {
+                invalid("Invalid input. Input cannot be '" + input + "'.\n");
+                continue;
+            }
             output = input[0];
             return;
         }
@@ -664,30 +783,27 @@ void input(std::string& output, const std::string& prompt, const std::string& ac
         std::getline(std::cin, input);
 
         if (input.empty()) {
-            printColor(RED,"Invalid input. Input must not be empty.\n");
-            printLine();
+            invalid("Invalid input. Input must not be empty.\n");
         } else if (input.length() < min_length || input.length() > max_length) {
-            printColor(RED,"Invalid input. Input must be between %d and %d characters.\n", min_length, max_length);
-            printLine();
+            invalid("Invalid input. Input must be between " + std::to_string(min_length) + " and " + std::to_string(max_length) + " characters.\n");
         } else {
-            bool invalid = false;
+            bool is_invalid = false;
             std::string invalid_chars;
 
             for (char c : input) {
                 if (accepted.find(c) == std::string::npos) {
-                    invalid = true;
+                    is_invalid = true;
                     if (invalid_chars.find(c) == std::string::npos) {
                         invalid_chars += c;
                     }
                 }
             }
 
-            if (!invalid) {
+            if (!is_invalid) {
                 output = input;
                 return;
             } else {
-                printColor(RED,"Invalid input. Input cannot contain '%s'.\n", invalid_chars.c_str());
-                printLine();
+                invalid("Invalid input. Input cannot contain '" + invalid_chars + "'.\n");
             }
         }
     }
@@ -712,8 +828,7 @@ void input(bool& output, const std::string& prompt, const char default_choice_0 
             }
         }
         
-        printColor(RED, "Invalid input. Input must be '%c' or '%c'.\n", default_choice_0, default_choice_1);
-        printLine();
+        invalid("Invalid input. Input must be '" + std::to_string(default_choice_0) + "' or '" + std::to_string(default_choice_1) + ".\n");
     }
 }
 
@@ -737,9 +852,9 @@ double getDouble(const std::string& prompt, double min = MIN_DOUBLE, double max 
     return buffer;
 }
 
-char getChar(const std::string& prompt) {
+char getChar(const std::string& prompt, const std::string& accepted = CHAR_LIB) {
     char buffer;
-    input(buffer, prompt);
+    input(buffer, prompt, accepted);
     return buffer;
 }
 
@@ -802,11 +917,11 @@ int menu_return = 0;
 void showMenu(const std::string& title, menu* options, int menu_width = MENU_WIDTH) {
     while (true) {
         system("cls");
-        printLineWidth(menu_width);
+        line(menu_width);
         if (title != "") {
             printCentered(menu_width, title);
             std::cout << std::endl;
-            printLineWidth(menu_width);
+            line(menu_width);
         }
 
         int i = 0; int excess = 0;
@@ -815,10 +930,10 @@ void showMenu(const std::string& title, menu* options, int menu_width = MENU_WID
                 break;
             }
             if (showMenu_functionCheck(options[i + excess], showMenu_title)) {
-                printLineWidth(menu_width);
+                line(menu_width);
                 printCentered(menu_width, options[i + excess].text);
                 std::cout << std::endl;
-                printLineWidth(menu_width);
+                line(menu_width);
                 excess++;
                 continue;
             }
@@ -828,7 +943,7 @@ void showMenu(const std::string& title, menu* options, int menu_width = MENU_WID
                 continue;
             }
             if (showMenu_functionCheck(options[i + excess], showMenu_line)) {
-                printLineWidth(menu_width);
+                line(menu_width);
                 excess++;
                 continue;
             }
@@ -838,7 +953,7 @@ void showMenu(const std::string& title, menu* options, int menu_width = MENU_WID
         }
 
         std::cout << "[0] Return" << std::endl;
-        printLineWidth(menu_width);
+        line(menu_width);
         int choice;
         input(choice, "Enter Choice: ");
 
@@ -848,7 +963,7 @@ void showMenu(const std::string& title, menu* options, int menu_width = MENU_WID
         }
 
         if (choice > i || choice < 0) {
-            invalidChoice(INVALID_CHOICE, menu_width);
+            invalid(INVALID_CHOICE, menu_width);
             continue;
         }
 
@@ -890,17 +1005,17 @@ void showPageMenu(const std::string& title, page_menu* page, int menu_width = ME
     
     while(true) {
         system("cls");
-        printLineWidth(menu_width);
+        line(menu_width);
         if (title != "") {
             printCentered(menu_width, title + " [" + std::to_string(current_page+1) + "/" + std::to_string(page_count) + "]");
             std::cout << std::endl;
-            printLineWidth(menu_width);
+            line(menu_width);
         }
         int i = 0; int excess = 0;
 
         while (true) {
             if(i >= MENU_PAGE_LENGTH) {
-                printColor(RED, "ERROR: Page Overflow.\n");
+                Win::color(Win::RED, "ERROR: Page Overflow.\n");
                 return;
             }
 
@@ -908,10 +1023,10 @@ void showPageMenu(const std::string& title, page_menu* page, int menu_width = ME
                 break;
             }
             if (showMenu_functionCheck(page[current_page].options[i+excess], showMenu_title)) {
-                printLineWidth(menu_width);
+                line(menu_width);
                 printCentered(menu_width, page[current_page].options[i + excess].text);
                 std::cout << std::endl;
-                printLineWidth(menu_width);
+                line(menu_width);
                 excess++;
                 continue;
             }
@@ -921,7 +1036,7 @@ void showPageMenu(const std::string& title, page_menu* page, int menu_width = ME
                 continue;
             }
             if (showMenu_functionCheck(page[current_page].options[i+excess], showMenu_line)) {
-                printLineWidth(menu_width);
+                line(menu_width);
                 excess++;
                 continue;
             }
@@ -930,7 +1045,7 @@ void showPageMenu(const std::string& title, page_menu* page, int menu_width = ME
             i++;
         }
         
-        printLineWidth(menu_width);
+        line(menu_width);
 
 		if (current_page > 0) {
 			std::cout << "[8] Previous Page" << std::endl;
@@ -942,7 +1057,7 @@ void showPageMenu(const std::string& title, page_menu* page, int menu_width = ME
         if (title == "") {
             std::cout << "Page [" + std::to_string(current_page+1) + "/" + std::to_string(page_count) + "]" << std::endl;
         }
-        printLineWidth(menu_width);
+        line(menu_width);
         int choice;
         input(choice, "Enter Choice: ");
         
@@ -953,7 +1068,7 @@ void showPageMenu(const std::string& title, page_menu* page, int menu_width = ME
                     continue;
                 }
                 else {
-                    invalidChoice();
+                    invalid();
                     continue;
                 }
             case 0: menu_return = 1; return;
@@ -963,14 +1078,14 @@ void showPageMenu(const std::string& title, page_menu* page, int menu_width = ME
                     continue;
                 }
                 else {
-                    invalidChoice();
+                    invalid();
                     continue;
                 }
             default: break;
         }
 
         if ((choice > i && choice != 8 && choice != 9) || choice < 0) {
-            invalidChoice(INVALID_CHOICE, menu_width);
+            invalid(INVALID_CHOICE, menu_width);
             continue;
         }
 
@@ -1038,12 +1153,12 @@ void printTableFull(const std::string& title, table* data) {
     }
 
     //Print title
-    printLineWidth(table_width);
+    line(table_width);
 
     if (title != "") {  
         printCentered(table_width, title);
         std::cout << std::endl;
-        printLineWidth(table_width);
+        line(table_width);
     }
 
     //Print headers
@@ -1091,7 +1206,7 @@ void printTableFull(const std::string& title, table* data) {
             
         std::cout << std::endl;
     }
-    printLineWidth(table_width);
+    line(table_width);
 }
 
 void printTable(const std::string& title, table* data) {
@@ -1117,11 +1232,11 @@ void printTable(const std::string& title, table* data) {
         }
         
         //Print title
-        printLineWidth(table_width);
+        line(table_width);
         if (title != "") {  
             printCentered(table_width, title);
             std::cout << std::endl;
-            printLineWidth(table_width);
+            line(table_width);
         }
 
         //Print headers
@@ -1170,7 +1285,7 @@ void printTable(const std::string& title, table* data) {
             std::cout << std::endl;
         }
         page_row_counter = 0;
-        printLineWidth(table_width);
+        line(table_width);
 
         std::cout << " Page " << page+1 << " of " << max_page+1 << "   ";
         if (page > 0) {
@@ -1184,7 +1299,7 @@ void printTable(const std::string& title, table* data) {
         }
         std::cout << " [0] Return" << std::endl;
 
-        printLineWidth(table_width);
+        line(table_width);
 
         int choice;
         input(choice, "Enter Choice: ");
@@ -1197,7 +1312,7 @@ void printTable(const std::string& title, table* data) {
                     break;
                 }
                 else {
-                    invalidChoice(INVALID_CHOICE, table_width);
+                    invalid(INVALID_CHOICE, table_width);
                     table_row_counter = page*TABLE_PAGE_LENGTH;
                     continue;
                 }
@@ -1209,16 +1324,16 @@ void printTable(const std::string& title, table* data) {
                     break;
                 }
                 else {
-                    invalidChoice(INVALID_CHOICE, table_width);
+                    invalid(INVALID_CHOICE, table_width);
                     table_row_counter = page*TABLE_PAGE_LENGTH;
                     continue;
                 }
             case 0:
-                printLine(2);
+                line(table_width);
                 return;
                 break;
             default:
-                invalidChoice(INVALID_CHOICE, table_width);
+                invalid(INVALID_CHOICE, table_width);
                 table_row_counter = page*TABLE_PAGE_LENGTH;
                 continue; 
         }
