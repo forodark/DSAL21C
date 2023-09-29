@@ -23,39 +23,39 @@ int main() {
     section = getString("Enter Section: ");
     final_grade = getDouble("Enter Final Grade: ", 0, 100);
 
-    if(final_grade >= 99 && final_grade <= 100) {
+    if(final_grade >= 98.5 && final_grade <= 100) {
         equivalent_grade = 1.00;
         remarks = "Excellent";
     } 
-    else if(final_grade >= 96) {
+    else if(final_grade >= 95.5) {
         equivalent_grade = 1.25;
         remarks = "Outstanding";
     }
-    else if(final_grade >= 93) {
+    else if(final_grade >= 92.5) {
         equivalent_grade = 1.50;
         remarks = "Superior";
     }
-    else if(final_grade >= 90) {
+    else if(final_grade >= 89.5) {
         equivalent_grade = 1.75;
         remarks = "Very Good";
     }
-    else if(final_grade >= 87) {
+    else if(final_grade >= 86.5) {
         equivalent_grade = 2.00;
         remarks = "Good";
     }
-    else if(final_grade >= 84) {
+    else if(final_grade >= 83.5) {
         equivalent_grade = 2.25;
         remarks = "Satisfactory";
     }
-    else if(final_grade >= 81) {
+    else if(final_grade >= 80.5) {
         equivalent_grade = 2.50;
         remarks = "Fairly Satisfactory";  
     }
-    else if(final_grade >= 78) {
+    else if(final_grade >= 77.5) {
         equivalent_grade = 2.75;
         remarks = "Fair";  
     }
-    else if(final_grade >= 75) {
+    else if(final_grade >= 74.5) {
         equivalent_grade = 3.00;
         remarks = "Passed";  
     }
