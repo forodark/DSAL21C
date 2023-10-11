@@ -15,9 +15,9 @@ int main() {
         }
         nl();
         if (slot[0] == slot[1] && slot[1] == slot[2])
-            println("You won!");
+            println("Congratulations! You won the jackpot!");
         else
-            println("You lost!");
+            println("Sorry! Better luck next time.");
 
         if(!getBool("Do you want to try again? (y/n): ", 'n', 'y'))
             break;
