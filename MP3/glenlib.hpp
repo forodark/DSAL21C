@@ -1379,13 +1379,6 @@ void printTable(const std::string& title, table* data) {
 
     }
 
-    // sample table
-    // table record[] = {
-    //     COL("Name", students, name, "20s"),
-    //     COL("GWA", students, gwa, "7.2lf"),
-    //     END_TABLE
-    // }; printTableFull("Students by GWA", record);
-
 
 }
 
