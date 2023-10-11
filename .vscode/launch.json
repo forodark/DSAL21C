@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/glenangelo.bautista/Documents/GitHub/DSAL21C/Programming Exercises 2",
-      "program": "c:/Users/glenangelo.bautista/Documents/GitHub/DSAL21C/Programming Exercises 2/build/Debug/outDebug",
+      "cwd": "c:/Users/Glen/Documents/GitHub/DSAL21C/prelim_exam",
+      "program": "c:/Users/Glen/Documents/GitHub/DSAL21C/prelim_exam/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

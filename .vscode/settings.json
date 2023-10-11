@@ -110,5 +110,6 @@
     "semaphore": "cpp",
     "stop_token": "cpp",
     "thread": "cpp"
-  }
+  },
+  "C_Cpp_Runner.msvcSecureNoWarnings": false
 }
