@@ -9,6 +9,23 @@ using namespace gl;
 #define ROWS 3
 #define COLUMNS 3
 
+void printArray(int arr[TABLES][ROWS][COLUMNS]) {
+    for (int table = 0; table < 3; table++) {
+        printColor(BLUE, "Table " + to_string(table) + "\n");
+        for (int column = 0; column < COLUMNS; column++)
+            printColor(YELLOW, "\t" + to_string(column));
+        nl();
+        for (int row = 0; row < ROWS; row++) {
+            printColor(GREEN, to_string(row));
+            for (int column = 0; column < COLUMNS; column++) {
+                print("\t" + to_string(arr[table][row][column]));
+            }
+            nl();
+        }
+        nl();
+    }
+}
+
 int main() {
     while(true) {
     int array3D[TABLES][ROWS][COLUMNS] = {
@@ -25,21 +42,8 @@ int main() {
          {25, 26, 27}}
     };
 
+    printArray(array3D);
 
-    for (int table = 0; table < 3; table++) {
-        printColor(BLUE, "Table " + to_string(table) + "\n");
-        for (int column = 0; column < COLUMNS; column++)
-            printColor(YELLOW, "\t" + to_string(column));
-        nl();
-        for (int row = 0; row < ROWS; row++) {
-            printColor(GREEN, to_string(row));
-            for (int column = 0; column < COLUMNS; column++) {
-                print("\t" + to_string(array3D[table][row][column]));
-            }
-            nl();
-        }
-        nl();
-    }
 
         if(!getBool("Do you want to try again? (y/n): ", 'n', 'y'))
             break;
