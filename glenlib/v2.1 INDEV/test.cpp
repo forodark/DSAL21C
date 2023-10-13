@@ -79,14 +79,16 @@ person people[] = {
 table TEST[] = {
     COL("ID", people, id, "9d"),
     COL("Name", people, name, "12s"),
-    COL("Float", people, floatval, "12f"),
-    COL("Double", people, doubleval, "12lf"),
+    COL("Float", people, floatval, "12.2f"),
+    COL("Double", people, doubleval, "12.2lf"),
     COL("Char", people, charval, "12c"),
     COL("Bool", people, boolval, "12b"),
     END_TABLE
 };
 
 int main() {
-    while(true) 
-        println(getOrdinal(getInt("Enter n: ")));
+    printTableFull("", TEST);
+    // cout << formatString("2.1", 12, 2);
+    // cout << "T";
+    return 0;
 }
