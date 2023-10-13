@@ -1,4 +1,5 @@
 #include "glenlib.hpp"
+#include <iostream>
 
 using namespace std;
 using namespace gl;
@@ -17,7 +18,7 @@ int getFib(int n) {
 
 int main() {
     while(true) {
-        int n = getInt("Enter a value for n: ");
+        int n = getInt("Enter n to find the nth Fibonacci Number: ");
         int result = getFib(n);
         println("The " + getOrdinal(n) + " Fibonacci number is: " + to_string(result));
         if(!getBool("Do you want to try again? (y/n): ", 'n', 'y'))

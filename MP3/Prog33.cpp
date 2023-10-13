@@ -25,7 +25,7 @@ int main() {
          {25, 26, 27}}
     };
 
-    //display table no., row no. and column no.
+    // display table no., row no. and column no.
     // for (int table = 0; table < 3; ++table) {
     //     for (int row = 0; row < ROWS; ++row) {
     //         for (int column = 0; column < COLUMNS; ++column) {

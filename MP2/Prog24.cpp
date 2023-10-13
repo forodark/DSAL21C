@@ -1,4 +1,5 @@
 #include "glenlib.hpp"
+#include <iostream>
 
 using namespace std;
 using namespace gl;
