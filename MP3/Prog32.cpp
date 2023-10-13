@@ -6,7 +6,7 @@ using namespace gl;
 //Using arrays, create a complete C++ program that will display three columns of COVID-19 data; Active, Recoveries, and Deaths.
 
 struct Data {
-    string country;
+    string city;
     int active;
     int recoveries;
     int deaths;
@@ -23,7 +23,7 @@ int main() {
         };
 
         table table1[] = {
-            COLUMN("Country", covid_data, country, "20s", Data),
+            COLUMN("City", covid_data, city, "20s", Data),
             COLUMN("Active", covid_data, active, "10d", Data),
             COLUMN("Recoveries", covid_data, recoveries, "12d", Data),
             COLUMN("Deaths", covid_data, deaths, "10d", Data),
