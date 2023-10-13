@@ -14,6 +14,7 @@
 //  - added ctos function (char to string)
 //  - added getOrdinal function
 //  - added support for empty println function
+//  - added alternative to COL (COLUMN) that doesnt use typeof (FIX THIS SOON)
 // Changes (v2.0)
 //  - TLDR: i ported the updates from glenlib java to c++
 //  - unified printLine and printLineWidth into line
@@ -1164,6 +1165,7 @@ struct table {
 };
 
 #define COL(HEADER, SOURCE, MEMBER, FORMAT) {HEADER, &SOURCE[0].MEMBER, sizeof(SOURCE)/sizeof(SOURCE[0]), sizeof(SOURCE[0]), FORMAT, offsetof(typeof(*(SOURCE)), MEMBER)}
+#define COLUMN(HEADER, SOURCE, MEMBER, FORMAT, STRUCT) {HEADER, &SOURCE[0].MEMBER, sizeof(SOURCE)/sizeof(SOURCE[0]), sizeof(SOURCE[0]), FORMAT, offsetof(STRUCT, MEMBER)}
 #define END_TABLE {"end_table", NULL, 0, 0, "", 0}
 
 void printTableFull(const std::string& title, table* data) {

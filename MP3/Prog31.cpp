@@ -1,4 +1,5 @@
 #include "glenlib.hpp"
+#include <iostream>
 
 using namespace std;
 using namespace gl;
@@ -32,14 +33,21 @@ int main() {
 
         for (int i = 0; i < SIZE; i++) {
             students[i].name = getString("[" + to_string(i) + "] Enter student name: ");
-            students[i].gwa = getDouble("[" + to_string(i) + "] Enter student GWA: ", 1.00, 5.00);
+            while(true) { // additional validation to prevent GWA from being between 3.00 and 5.00
+                students[i].gwa = getDouble("[" + to_string(i) + "] Enter student GWA: ", 1.00, 5.00);
+                if (students[i].gwa > 3.00 && students[i].gwa < 5.00) {
+                    invalid("Invalid GWA. GWA cannot be between 3.00 and 5.00.\n");
+                    continue;
+                }
+                break;
+            }
         }
 
         insertionSort(students); 
 
         table record[] = {
-            COL("Name", students, name, "20s"),
-            COL("GWA", students, gwa, "7.2lf"),
+            COLUMN("Name", students, name, "20s", Student),
+            COLUMN("GWA", students, gwa, "7.2lf", Student),
             END_TABLE
         }; printTableFull("Students by GWA", record);
         if(!getBool("Do you want to try again? (y/n): ", 'n', 'y'))

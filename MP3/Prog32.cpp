@@ -15,20 +15,20 @@ struct Data {
 int main() {
     while(true) {
         Data covid_data[] = {
-            {"Philippines", 1000, 200, 300},
-            {"Japan", 400, 500, 600},
-            {"China", 700, 800, 900},
-            {"Malaysia", 1000, 200, 300},
-            {"Singapore", 400, 500, 600}
+            {"Manila", 64, 162852, 1939},
+            {"Makati", 54, 95066, 737},
+            {"Mandaluyong", 30, 53816, 559},
+            {"Pasay", 12, 58159, 423},
+            {"Taguig", 50, 93889, 593}
         };
 
         table table1[] = {
-            COL("Country", covid_data, country, "20s"),
-            COL("Active", covid_data, active, "10d"),
-            COL("Recoveries", covid_data, recoveries, "12d"),
-            COL("Deaths", covid_data, deaths, "10d"),
+            COLUMN("Country", covid_data, country, "20s", Data),
+            COLUMN("Active", covid_data, active, "10d", Data),
+            COLUMN("Recoveries", covid_data, recoveries, "12d", Data),
+            COLUMN("Deaths", covid_data, deaths, "10d", Data),
             END_TABLE
-        }; printTableFull("COVID-19 Data", table1);
+        }; printTableFull("COVID-19 Data in NCR", table1);
         if(!getBool("Do you want to try again? (y/n): ", 'n', 'y'))
             break;
     }
