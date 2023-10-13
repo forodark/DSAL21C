@@ -22,13 +22,13 @@ int main() {
         for (int i = 0; i < SIZE; i++) {
             MyNums[i].base = getInt("[" + to_string(i) + "] Enter base: ");
             MyNums[i].exponent = getInt("[" + to_string(i) + "] Enter exponent: ");
-            MyNums[i].computed = pow(myNums[i].base, myNums[i].exponent);
+            MyNums[i].computed = pow(MyNums[i].base, MyNums[i].exponent);
         }
 
         table numbers[] = {
-            COLUMN("Base", MyNums, number, "15d", Number),
-            COLUMN("Exponent", MyNums, squared, "15d", Number
-            COLUMN("Computed Value", MyNums, cubed, "20d", Number),
+            COLUMN("Base", MyNums, base, "15d", Number),
+            COLUMN("Exponent", MyNums, exponent, "15d", Number),
+            COLUMN("Computed Value", MyNums, computed, "20d", Number),
             END_TABLE
         }; printTableFull("MyNums Computed Numbers", numbers);
         if(!getBool("Do you want to try again? (y/n): ", 'n', 'y'))

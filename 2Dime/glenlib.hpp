@@ -14,6 +14,9 @@
 //  - added ctos function (char to string)
 //  - added getOrdinal function
 //  - added support for empty println function
+//  - added alternative to COL (COLUMN) that doesnt use typeof (FIX THIS SOON)
+//  - fixed decimal formatting in tables
+/// - fixed format string not being able to handle float and double strings
 // Changes (v2.0)
 //  - TLDR: i ported the updates from glenlib java to c++
 //  - unified printLine and printLineWidth into line
@@ -497,11 +500,22 @@ template <typename T>
 std::string formatString(const T& value, int width = 0, int precision = -1) {
     std::stringstream ss;
     
-    if ((precision >= 0 && typeid(T) == typeid(float)) || typeid(T) == typeid(double)) {
-        ss << std::fixed << std::setprecision(precision);
+    if (precision >= 0) {
+        try {
+            std::stringstream buffer;
+            buffer << value;
+            double number = std::stod(buffer.str());
+            ss << std::setprecision(precision) << std::fixed << number;
+        }
+        catch (const std::exception& e) {
+            ss << value;
+        }
+    }
+    else {
+        ss << value;
     }
 
-    ss << value;
+
     
     return truncate(ss.str(), width);
 }
@@ -1232,8 +1246,7 @@ void printTableFull(const std::string& title, table* data) {
             else {
                 buffer = "Unknown";
             }
-
-            std::cout << " " << formatString(buffer, extractNumber(data[j].format) - 1) << "|";
+            std::cout << " " << formatString(buffer, extractNumber(data[j].format) - 1, extractDecimal(data[j].format)) << "|";
 
         }
             
@@ -1318,7 +1331,7 @@ void printTable(const std::string& title, table* data) {
                     buffer = "N/A";
                 }
 
-                std::cout << " " << formatString(buffer, extractNumber(data[j].format) - 1) << "|";
+                std::cout << " " << formatString(buffer, extractNumber(data[j].format) - 1, extractDecimal(data[j].format)) << "|";
 
             }
                 
@@ -1379,6 +1392,13 @@ void printTable(const std::string& title, table* data) {
         }
 
     }
+
+    // sample table
+    // table record[] = {
+    //     COL("Name", students, name, "20s"),
+    //     COL("GWA", students, gwa, "7.2lf"),
+    //     END_TABLE
+    // }; printTableFull("Students by GWA", record);
 
 
 }

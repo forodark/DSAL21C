@@ -10,7 +10,7 @@ using namespace gl;
 #define COLUMNS 3
 
 int main() {
-    // while(true) {
+    while(true) {
     int array3D[TABLES][ROWS][COLUMNS] = {
         {{1, 2, 3},
          {4, 5, 6},
@@ -25,29 +25,24 @@ int main() {
          {25, 26, 27}}
     };
 
-    // display table no., row no. and column no.
-    // for (int table = 0; table < 3; ++table) {
-    //     for (int row = 0; row < ROWS; ++row) {
-    //         for (int column = 0; column < COLUMNS; ++column) {
-    //             std::cout << "Table " << table + 1 << ", Row " << row + 1 << ", Column " << column + 1
-    //                       << " = " << array3D[table][row][column] << std::endl;
-    //         }
-    //     }
-    // }
 
-    //display per table
-    for (int table = 0; table < 3; ++table) {
-        for (int row = 0; row < ROWS; ++row) {
-            for (int column = 0; column < COLUMNS; ++column) {
-                std::cout << array3D[table][row][column] << " ";
+    for (int table = 0; table < 3; table++) {
+        printColor(BLUE, "Table " + to_string(table) + "\n");
+        for (int column = 0; column < COLUMNS; column++)
+            printColor(YELLOW, "\t" + to_string(column));
+        nl();
+        for (int row = 0; row < ROWS; row++) {
+            printColor(GREEN, to_string(row));
+            for (int column = 0; column < COLUMNS; column++) {
+                print("\t" + to_string(array3D[table][row][column]));
             }
-            std::cout << std::endl;
+            nl();
         }
-        std::cout << std::endl;
+        nl();
     }
 
-    //     if(!getBool("Do you want to try again? (y/n): ", 'n', 'y'))
-    //         break;
-    // }
+        if(!getBool("Do you want to try again? (y/n): ", 'n', 'y'))
+            break;
+    }
     return 0;
 }
