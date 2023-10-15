@@ -1177,8 +1177,11 @@ struct table {
     size_t offset;
 };
 
+#define GET_OFFSET(instance, member) \
+    offsetof(decltype(instance), member)
+
 #define COL(HEADER, SOURCE, MEMBER, FORMAT) {HEADER, &SOURCE[0].MEMBER, sizeof(SOURCE)/sizeof(SOURCE[0]), sizeof(SOURCE[0]), FORMAT, offsetof(typeof(*(SOURCE)), MEMBER)}
-#define COLUMN(HEADER, SOURCE, MEMBER, FORMAT, STRUCT) {HEADER, &SOURCE[0].MEMBER, sizeof(SOURCE)/sizeof(SOURCE[0]), sizeof(SOURCE[0]), FORMAT, offsetof(STRUCT, MEMBER)}
+#define COLUMN(HEADER, SOURCE, MEMBER, FORMAT) {HEADER, &SOURCE[0].MEMBER, sizeof(SOURCE)/sizeof(SOURCE[0]), sizeof(SOURCE[0]), FORMAT, GET_OFFSET(SOURCE, MEMBER)}
 #define END_TABLE {"end_table", NULL, 0, 0, "", 0}
 
 void printTableFull(const std::string& title, table* data) {
