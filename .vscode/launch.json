@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "m:/GitHub/DSAL21C/MP3",
-      "program": "m:/GitHub/DSAL21C/MP3/build/Debug/outDebug",
+      "cwd": "m:/GitHub/DSAL21C/2Dime",
+      "program": "m:/GitHub/DSAL21C/2Dime/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
