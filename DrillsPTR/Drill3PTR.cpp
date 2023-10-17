@@ -7,7 +7,7 @@ using namespace gl;
 //Write a C++ program that will declare an array named myArray of size 10. Prompt the user to input 10 integers
 //to the array using a loop. Display the values of myArray and their addresses using a pointer named myPtr.
        
-#define SIZE 3
+#define SIZE 10
 int main() {
     int myArray[SIZE];
 
