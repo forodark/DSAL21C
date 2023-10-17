@@ -15,6 +15,7 @@
 //  - added getOrdinal function
 //  - added support for empty println function
 //  - added alternative to COL (COLUMN) that doesnt use typeof (FIX THIS SOON)
+//      > FIXED, changed COL to be compatible with non-compiler specific functions (removed typeof)
 //  - fixed decimal formatting in tables
 /// - fixed format string not being able to handle float and double strings
 // Changes (v2.0)
@@ -1177,11 +1178,13 @@ struct table {
     size_t offset;
 };
 
-#define GET_OFFSET(instance, member) \
-    offsetof(decltype(instance), member)
+template <typename T, typename U>
+std::size_t getOffset(const T& array, const U& member) {
+    return reinterpret_cast<std::size_t>(&member) - reinterpret_cast<std::size_t>(&array);
+}
 
-#define COL(HEADER, SOURCE, MEMBER, FORMAT) {HEADER, &SOURCE[0].MEMBER, sizeof(SOURCE)/sizeof(SOURCE[0]), sizeof(SOURCE[0]), FORMAT, offsetof(typeof(*(SOURCE)), MEMBER)}
-#define COLUMN(HEADER, SOURCE, MEMBER, FORMAT) {HEADER, &SOURCE[0].MEMBER, sizeof(SOURCE)/sizeof(SOURCE[0]), sizeof(SOURCE[0]), FORMAT, GET_OFFSET(SOURCE, MEMBER)}
+// #define COL(HEADER, SOURCE, MEMBER, FORMAT) {HEADER, &SOURCE[0].MEMBER, sizeof(SOURCE)/sizeof(SOURCE[0]), sizeof(SOURCE[0]), FORMAT, offsetof(typeof(*(SOURCE)), MEMBER)}
+#define COL(HEADER, SOURCE, MEMBER, FORMAT) {HEADER, &SOURCE[0].MEMBER, sizeof(SOURCE)/sizeof(SOURCE[0]), sizeof(SOURCE[0]), FORMAT, getOffset(SOURCE, SOURCE[0].MEMBER)}
 #define END_TABLE {"end_table", NULL, 0, 0, "", 0}
 
 void printTableFull(const std::string& title, table* data) {
