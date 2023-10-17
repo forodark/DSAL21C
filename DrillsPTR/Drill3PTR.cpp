@@ -17,8 +17,8 @@ int main() {
 
     for(int i = 0; i < SIZE; i++){
         int* myPtr = &myArray[i];
-        printf("myArray[%d] = %d\n", i, myArray[i]);
-        printf("myPtr = %d\n", i, myPtr);
+        cout << "myArray[" << i << "] = " << myArray[i] << endl
+             << "myPtr = " << myPtr << endl;
     }
 
     return 0;
