@@ -16,7 +16,7 @@ int main() {
     cout << "i = " << i << endl
          << "&i = " << &i << endl
          << "iptr = " << iptr << endl
-         << "*iptr = " << *iptr << endl;
+         << "&iptr = " << &iptr << endl;
 
     return 0;
 }
