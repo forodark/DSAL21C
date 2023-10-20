@@ -12,6 +12,7 @@
 // Changes (v2.2)
 //  - revamped println and print functions to be able to take multiple args and concat them
 //  - changed nl to use endl
+//  - added a concat function that works with most datatypes
 // Changes (v2.1)
 //  - Fixed bug in error message for getBool
 //  - added ctos function (char to string)
@@ -197,6 +198,14 @@ void nl() {
 
 //==================================================================================================================
 // Color Macros & Print Functions
+
+template <typename T, typename... Args>
+std::string concat(const T& value, const Args&... args) {
+    std::ostringstream oss;
+    oss << value;
+    oss << concat(args...);
+    return oss.str();
+}
 
 template <typename T>
 void print(const T& value) {
