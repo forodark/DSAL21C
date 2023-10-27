@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "m:/GitHub/DSAL21C/DrillsPTR",
-      "program": "m:/GitHub/DSAL21C/DrillsPTR/build/Debug/outDebug",
+      "cwd": "c:/Users/glenangelo.bautista/Documents/GitHub/DSAL21C/Stack_10_27",
+      "program": "c:/Users/glenangelo.bautista/Documents/GitHub/DSAL21C/Stack_10_27/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
