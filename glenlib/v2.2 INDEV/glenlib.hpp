@@ -13,6 +13,7 @@
 //  - revamped println and print functions to be able to take multiple args and concat them
 //  - changed nl to use endl
 //  - added a concat function that works with most datatypes
+//  - fixed invalid and exit functions to both automatically have next line char
 // Changes (v2.1)
 //  - Fixed bug in error message for getBool
 //  - added ctos function (char to string)
@@ -137,8 +138,8 @@ namespace gl {
 #define MAX_DOUBLE 2147483647.0
 
 //Default Messages
-#define INVALID_CHOICE "Invalid Choice.\n"
-#define EXIT_PROGRAM "Exiting Program.\n"
+#define INVALID_CHOICE "Invalid Choice."
+#define EXIT_PROGRAM "Exiting Program."
 
 //Line Defaults
 static int default_line_width = 31;
@@ -415,6 +416,7 @@ void waitEnter() { //waits for user to press enter
 // Sample: invalid("Invalid choice", 10);
 void invalid(const std::string& message, int width) { //returns invalid choice with custom parameters
     Win::color(Win::RED, message);
+    nl();
     line(width);
     waitEnter();
     clear(INVALID_CLEAR);
