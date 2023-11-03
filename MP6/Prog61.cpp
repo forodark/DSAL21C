@@ -49,7 +49,7 @@ void peek() {
     cout << "TOS -> " << stack[top] << endl;
 }
 
-void showAll() {
+void display() {
     if (top == -1) {
         invalid("Error: Stack is empty\n");
         menu_return = 1; return;
@@ -65,7 +65,7 @@ int main() {
         {"Push", push},
         {"Pop", pop},
         {"Peek", peek},
-        {"Display", showAll},
+        {"Display", display},
         END_MENU
     };
     do {
