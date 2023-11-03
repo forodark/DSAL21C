@@ -64,7 +64,7 @@ int main() {
         {"Peek", peek},
         END_MENU
     };
-
+    menuSettings(0, 1, 1);
     showMenu("Stack Operations", stack_menu);
     exitProgram();
     return 0;

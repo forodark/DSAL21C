@@ -12,5 +12,7 @@ int main() {
     string test = concat("Hello", "test");
     print(test);
 
+    menu
+
     return 0;
 }
