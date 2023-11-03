@@ -210,6 +210,10 @@ void nl() {
 //==================================================================================================================
 // Color Macros & Print Functions
 
+std::string concat() {
+    return "";
+}
+
 template <typename T, typename... Args>
 std::string concat(const T& value, const Args&... args) {
     std::ostringstream oss;
