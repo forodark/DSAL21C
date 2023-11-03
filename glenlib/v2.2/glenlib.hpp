@@ -999,10 +999,14 @@ void noReturn() {no_return = 1;}
 void dontRepeat() {dont_repeat = 1;}
 void setReturnText(const std::string& text) {return_text = text;}
 
-void menuSettings(int dont_clear_, int no_return_, int dont_repeat_, const std::string& return_text_) {
+void menuSettings(int dont_clear_, int no_return_, int dont_repeat_) {
     dont_clear = dont_clear_;
     no_return = no_return_;
     dont_repeat = dont_repeat_;
+}
+
+void menuSettings(int dont_clear_, int no_return_, int dont_repeat_, const std::string& return_text_) {
+    menuSettings(dont_clear_, no_return_, dont_repeat_);
     return_text = return_text_;
 }
 
