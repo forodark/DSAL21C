@@ -14,6 +14,7 @@
 //  - changed nl to use endl
 //  - added a concat function that works with most datatypes
 //  - fixed invalid and exit functions to both automatically have next line char
+//  - added dontWait function for menus
 // Changes (v2.1)
 //  - Fixed bug in error message for getBool
 //  - added ctos function (char to string)
@@ -974,6 +975,10 @@ int showMenu_findPosition(menu* options, int option) {
 #define END_MENU {nullptr, showMenu_end}
 
 int menu_return = 0;
+
+void dontWait() {
+    menu_return = 1;
+}
 
 void showMenu(const std::string& title, menu* options, int menu_width = MENU_WIDTH) {
     while (true) {
