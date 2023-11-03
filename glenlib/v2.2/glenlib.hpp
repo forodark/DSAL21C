@@ -15,10 +15,15 @@
 //  - added a concat function that works with most datatypes
 //  - fixed invalid and exit functions to both automatically have next line char
 //  - added dontWait function for menus
-//  - added quitMenu function
-//  - added dontClear functions for menus
+//  - added quitMenu function to dont display menu again
 //  - added showMenuOnce that only shows that exits after the function runs
 //  - added displayOptions to reduce repeated code
+//  - added functions for setting menu parameters
+//      > noReturn
+//      > setReturnText
+//      > dontClear
+//      > dontRepeat
+//      > menuSettings (set multiple)
 // Changes (v2.1)
 //  - Fixed bug in error message for getBool
 //  - added ctos function (char to string)
@@ -978,20 +983,27 @@ int showMenu_findPosition(menu* options, int option) {
 #define LINE {nullptr, showMenu_line}
 #define END_MENU {nullptr, showMenu_end}
 
+const std::string RETURN_TEXT = "Return";
+
 int menu_return = 0;
 int end_menu = 0;
 int dont_clear = 0;
+int no_return = 0;
+int dont_repeat = 0;
+std::string return_text = RETURN_TEXT;
 
-void dontWait() {
-    menu_return = 1;
-}
+void dontWait() {menu_return = 1;}
+void quitMenu() {end_menu = 1;}
+void dontClear() {dont_clear = 1;}
+void noReturn() {no_return = 1;}
+void dontRepeat() {dont_repeat = 1;}
+void setReturnText(const std::string& text) {return_text = text;}
 
-void quitMenu() {
-    end_menu = 1;
-}
-
-void dontClear() {
-    dont_clear = 1;
+void menuSettings(int dont_clear_, int no_return_, int dont_repeat_, const std::string& return_text_) {
+    dont_clear = dont_clear_;
+    no_return = no_return_;
+    dont_repeat = dont_repeat_;
+    return_text = return_text_;
 }
 
 int displayOptions(const std::string& title, menu* options, int menu_width) {
@@ -1030,50 +1042,17 @@ int displayOptions(const std::string& title, menu* options, int menu_width) {
         i++;
     }
 
-    std::cout << "[0] Return" << std::endl;
+    std::cout << "[0] " << return_text << std::endl;
+    return_text = RETURN_TEXT;
+
     line(menu_width);
 
     return i;
 }
 
-void showMenuOnce(const std::string& title, menu* options, int menu_width = MENU_WIDTH) {
+void showMenu(const std::string& title, menu* options, int menu_width = MENU_WIDTH) {
     int count = 0;
     while (count == 0) {
-        if (dont_clear != 1) {
-            system("cls");
-        } else {
-            dont_clear = 0;
-        }
-
-        int option_count = displayOptions(title, options, menu_width);
-
-        int choice;
-        input(choice, "Enter Choice: ");
-
-        if (choice == 0) {
-            menu_return = 1;
-            return;
-        }
-
-        if (choice > option_count || choice < 0) {
-            invalid(INVALID_CHOICE, menu_width);
-            continue;
-        }
-
-        count++;
-        system("cls");
-        options[showMenu_findPosition(options, choice)].function();
-        if (menu_return != 1) {
-            waitEnter();
-            system("cls");
-        }
-
-        menu_return = 0;
-    }
-}
-
-void showMenu(const std::string& title, menu* options, int menu_width = MENU_WIDTH) {
-    while (true) {
         if (end_menu == 1) {
             end_menu = 0;
             return;
@@ -1089,9 +1068,12 @@ void showMenu(const std::string& title, menu* options, int menu_width = MENU_WID
         int choice;
         input(choice, "Enter Choice: ");
 
-        if (choice == 0) {
+        if (choice == 0 && no_return != 1) {
             menu_return = 1;
             return;
+        } else if (choice == 0 && no_return == 1) {
+            invalid(INVALID_CHOICE, menu_width);
+            continue;
         }
 
         if (choice > option_count || choice < 0) {
@@ -1106,8 +1088,20 @@ void showMenu(const std::string& title, menu* options, int menu_width = MENU_WID
             system("cls");
         }
 
+        if (dont_repeat == 1) {
+            dont_repeat = 0;
+            end_menu = 0;
+            count++;
+        }
+        
+        no_return = 0;
         menu_return = 0;
     }
+}
+
+void showMenuOnce(const std::string& title, menu* options, int menu_width = MENU_WIDTH) {
+    dontRepeat();
+    showMenu(title, options, menu_width);
 }
 
 /* Sample for showMenu()

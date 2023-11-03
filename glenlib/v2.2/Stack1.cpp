@@ -62,10 +62,10 @@ int main() {
         {"Push", push},
         {"Pop", pop},
         {"Peek", peek},
-        {"Show All", showAll},
         END_MENU
     };
-    showMenuOnce("Stack Operations", stack_menu);
+
+    showMenu("Stack Operations", stack_menu);
     exitProgram();
     return 0;
 }
