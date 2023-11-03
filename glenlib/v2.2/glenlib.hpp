@@ -15,6 +15,10 @@
 //  - added a concat function that works with most datatypes
 //  - fixed invalid and exit functions to both automatically have next line char
 //  - added dontWait function for menus
+//  - added quitMenu function
+//  - added dontClear functions for menus
+//  - added showMenuOnce that only shows that exits after the function runs
+//  - added displayOptions to reduce repeated code
 // Changes (v2.1)
 //  - Fixed bug in error message for getBool
 //  - added ctos function (char to string)
@@ -975,51 +979,74 @@ int showMenu_findPosition(menu* options, int option) {
 #define END_MENU {nullptr, showMenu_end}
 
 int menu_return = 0;
+int end_menu = 0;
+int dont_clear = 0;
 
 void dontWait() {
     menu_return = 1;
 }
 
-void showMenu(const std::string& title, menu* options, int menu_width = MENU_WIDTH) {
-    while (true) {
-        system("cls");
+void quitMenu() {
+    end_menu = 1;
+}
+
+void dontClear() {
+    dont_clear = 1;
+}
+
+int displayOptions(const std::string& title, menu* options, int menu_width) {
+    line(menu_width);
+    if (title != "") {
+        printCentered(menu_width, title);
+        std::cout << std::endl;
         line(menu_width);
-        if (title != "") {
-            printCentered(menu_width, title);
+    }
+
+    int i = 0; int excess = 0;
+    while (true) {
+        if (showMenu_functionCheck(options[i + excess], showMenu_end)) {
+            break;
+        }
+        if (showMenu_functionCheck(options[i + excess], showMenu_title)) {
+            line(menu_width);
+            printCentered(menu_width, options[i + excess].text);
             std::cout << std::endl;
             line(menu_width);
+            excess++;
+            continue;
+        }
+        if (showMenu_functionCheck(options[i + excess], showMenu_subtitle)) {
+            std::cout << options[i+excess].text << std::endl;
+            excess++;
+            continue;
+        }
+        if (showMenu_functionCheck(options[i + excess], showMenu_line)) {
+            line(menu_width);
+            excess++;
+            continue;
         }
 
-        int i = 0; int excess = 0;
-        while (true) {
-            if (showMenu_functionCheck(options[i + excess], showMenu_end)) {
-                break;
-            }
-            if (showMenu_functionCheck(options[i + excess], showMenu_title)) {
-                line(menu_width);
-                printCentered(menu_width, options[i + excess].text);
-                std::cout << std::endl;
-                line(menu_width);
-                excess++;
-                continue;
-            }
-            if (showMenu_functionCheck(options[i + excess], showMenu_subtitle)) {
-                std::cout << options[i+excess].text << std::endl;
-                excess++;
-                continue;
-            }
-            if (showMenu_functionCheck(options[i + excess], showMenu_line)) {
-                line(menu_width);
-                excess++;
-                continue;
-            }
+        std::cout << "[" << i+1 << "] " << options[i + excess].text << std::endl;
+        i++;
+    }
 
-            std::cout << "[" << i+1 << "] " << options[i + excess].text << std::endl;
-            i++;
+    std::cout << "[0] Return" << std::endl;
+    line(menu_width);
+
+    return i;
+}
+
+void showMenuOnce(const std::string& title, menu* options, int menu_width = MENU_WIDTH) {
+    int count = 0;
+    while (count == 0) {
+        if (dont_clear != 1) {
+            system("cls");
+        } else {
+            dont_clear = 0;
         }
 
-        std::cout << "[0] Return" << std::endl;
-        line(menu_width);
+        int option_count = displayOptions(title, options, menu_width);
+
         int choice;
         input(choice, "Enter Choice: ");
 
@@ -1028,7 +1055,46 @@ void showMenu(const std::string& title, menu* options, int menu_width = MENU_WID
             return;
         }
 
-        if (choice > i || choice < 0) {
+        if (choice > option_count || choice < 0) {
+            invalid(INVALID_CHOICE, menu_width);
+            continue;
+        }
+
+        count++;
+        system("cls");
+        options[showMenu_findPosition(options, choice)].function();
+        if (menu_return != 1) {
+            waitEnter();
+            system("cls");
+        }
+
+        menu_return = 0;
+    }
+}
+
+void showMenu(const std::string& title, menu* options, int menu_width = MENU_WIDTH) {
+    while (true) {
+        if (end_menu == 1) {
+            end_menu = 0;
+            return;
+        }
+        if (dont_clear != 1) {
+            system("cls");
+        } else {
+            dont_clear = 0;
+        }
+
+        int option_count = displayOptions(title, options, menu_width);
+
+        int choice;
+        input(choice, "Enter Choice: ");
+
+        if (choice == 0) {
+            menu_return = 1;
+            return;
+        }
+
+        if (choice > option_count || choice < 0) {
             invalid(INVALID_CHOICE, menu_width);
             continue;
         }
@@ -1070,6 +1136,12 @@ void showPageMenu(const std::string& title, page_menu* page, int menu_width = ME
     }
     
     while(true) {
+
+        if (end_menu == 1) {
+            end_menu = 0;
+            return;
+        }
+        
         system("cls");
         line(menu_width);
         if (title != "") {
