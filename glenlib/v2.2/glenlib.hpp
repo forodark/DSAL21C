@@ -153,7 +153,7 @@ namespace gl {
 
 //Line Defaults
 static int default_line_width = 31;
-#define INVALID_CLEAR 4
+#define INVALID_CLEAR 5
 
 //Input Defaults
 #define INPUT_PROMPT "Input: "
