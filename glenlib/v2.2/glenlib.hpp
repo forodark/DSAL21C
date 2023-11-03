@@ -1046,7 +1046,9 @@ int displayOptions(const std::string& title, menu* options, int menu_width) {
         i++;
     }
 
-    std::cout << "[0] " << return_text << std::endl;
+    if (no_return != 1) {
+        std::cout << "[0] " << return_text << std::endl;
+    }
     return_text = RETURN_TEXT;
 
     line(menu_width);
