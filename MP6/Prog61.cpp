@@ -71,7 +71,7 @@ int main() {
     do {
         menuSettings(0, 1, 1);
         showMenu("Stack Operations", stack_menu);
-    } while(getBool("Do you want to try again? (y/n): ", 'y', 'n') == 1);
+    } while(getBool("Do you want to try again? (y/n): ", 'n', 'y') == 1);
     exitProgram();
     return 0;
 }
