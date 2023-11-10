@@ -25,6 +25,7 @@
 //      > dontRepeat
 //      > menuSettings (set multiple)
 //      > dontClearAfter
+//      > dontClearMenu
 // Changes (v2.1)
 //  - Fixed bug in error message for getBool
 //  - added ctos function (char to string)
@@ -154,7 +155,7 @@ namespace gl {
 
 //Line Defaults
 static int default_line_width = 31;
-#define INVALID_CLEAR 5
+#define INVALID_CLEAR 4
 
 //Input Defaults
 #define INPUT_PROMPT "Input: "
@@ -429,16 +430,18 @@ void waitEnter() { //waits for user to press enter
 }
 
 // Sample: invalid("Invalid choice", 10);
-void invalid(const std::string& message, int width) { //returns invalid choice with custom parameters
+void invalid(const std::string& message, int width, bool clear_after = true) { //returns invalid choice with custom parameters
     Win::color(Win::RED, message);
     nl();
     line(width);
-    waitEnter();
-    clear(INVALID_CLEAR);
+    if(clear_after) {
+        waitEnter();
+        clear(INVALID_CLEAR);
+    }
 }
 
-void invalid(const std::string& message) {
-    invalid(message, default_line_width);
+void invalid(const std::string& message, bool clear_after = true) {
+    invalid(message, default_line_width, clear_after);
 }
 
 void invalid() {
@@ -992,7 +995,8 @@ const std::string RETURN_TEXT = "Return";
 
 int menu_return = 0;
 int end_menu = 0;
-int dont_clear = 0;
+int dont_clear_before = 0;
+int dont_clear_menu = 0;
 int dont_clear_after = 0;
 int no_return = 0;
 int dont_repeat = 0;
@@ -1000,21 +1004,23 @@ std::string return_text = RETURN_TEXT;
 
 void dontWait() {menu_return = 1;}
 void quitMenu() {end_menu = 1;}
-void dontClear() {dont_clear = 1;}
+void dontClearBefore() {dont_clear_before = 1;}
+void dontClearMenu() {dont_clear_menu = 1;}
 void dontClearAfter() {dont_clear_after = 1;}
 void noReturn() {no_return = 1;}
 void dontRepeat() {dont_repeat = 1;}
 void setReturnText(const std::string& text) {return_text = text;}
 
-void menuSettings(int dont_clear_, int no_return_, int dont_repeat_, int dont_clear_after_) {
-    dont_clear = dont_clear_;
+void menuSettings(int dont_clear_before_, int no_return_, int dont_repeat_, int dont_clear_after_, int dont_clear_menu_) {
+    dont_clear_before = dont_clear_before_;
     no_return = no_return_;
     dont_repeat = dont_repeat_;
     dont_clear_after = dont_clear_after_;
+    dont_clear_menu = dont_clear_menu_;
 }
 
-void menuSettings(int dont_clear_, int no_return_, int dont_repeat_, int dont_clear_after_, const std::string& return_text_) {
-    menuSettings(dont_clear_, no_return_, dont_repeat_, dont_clear_after_);
+void menuSettings(int dont_clear_before_, int no_return_, int dont_repeat_, int dont_clear_after_, int dont_clear_menu_, const std::string& return_text_) {
+    menuSettings(dont_clear_before_, no_return_, dont_repeat_, dont_clear_after_, dont_clear_menu_);
     return_text = return_text_;
 }
 
@@ -1071,10 +1077,10 @@ void showMenu(const std::string& title, menu* options, int menu_width = MENU_WID
             end_menu = 0;
             return;
         }
-        if (dont_clear != 1) {
+        if (dont_clear_before != 1) {
             system("cls");
         } else {
-            dont_clear = 0;
+            dont_clear_before = 0;
         }
 
         int option_count = displayOptions(title, options, menu_width);
@@ -1095,16 +1101,20 @@ void showMenu(const std::string& title, menu* options, int menu_width = MENU_WID
             continue;
         }
 
-        if (dont_clear_after != 1) {
+        if (dont_clear_menu != 1) {
             system("cls");
         } else {
-            dont_clear_after = 0;
+            dont_clear_menu = 0;
         }
 
         options[showMenu_findPosition(options, choice)].function();
         if (menu_return != 1) {
             waitEnter();
-            system("cls");
+            if (dont_clear_after != 1) {
+                system("cls");
+            } else {
+                dont_clear_after = 0;
+            }
         }
 
         if (dont_repeat == 1) {
@@ -1240,10 +1250,10 @@ void showPageMenu(const std::string& title, page_menu* page, int menu_width = ME
             continue;
         }
 
-        if (dont_clear_after != 1) {
+        if (dont_clear_menu != 1) {
             system("cls");
         } else {
-            dont_clear_after = 0;
+            dont_clear_menu = 0;
         }
 
 
@@ -1252,7 +1262,11 @@ void showPageMenu(const std::string& title, page_menu* page, int menu_width = ME
 
         if (menu_return != 1) {
             waitEnter();
-            system("cls");
+            if (dont_clear_after != 1) {
+                system("cls");
+            } else {
+                dont_clear_after = 0;
+            }
         }
 
         menu_return = 0;
