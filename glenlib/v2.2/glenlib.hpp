@@ -24,6 +24,7 @@
 //      > dontClear
 //      > dontRepeat
 //      > menuSettings (set multiple)
+//      > dontClearAfter
 // Changes (v2.1)
 //  - Fixed bug in error message for getBool
 //  - added ctos function (char to string)
@@ -167,7 +168,7 @@ static int default_line_width = 31;
 //Table Defaults
 #define TABLE_PAGE_LENGTH 10
 
-//==================================================================================================================
+//=========================================================menu=========================================================
 // Character list definitions, used for inputCustom()
 #define ALPHANUM "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 #define NUMERIC "0123456789."
@@ -992,6 +993,7 @@ const std::string RETURN_TEXT = "Return";
 int menu_return = 0;
 int end_menu = 0;
 int dont_clear = 0;
+int dont_clear_after = 0;
 int no_return = 0;
 int dont_repeat = 0;
 std::string return_text = RETURN_TEXT;
@@ -999,18 +1001,20 @@ std::string return_text = RETURN_TEXT;
 void dontWait() {menu_return = 1;}
 void quitMenu() {end_menu = 1;}
 void dontClear() {dont_clear = 1;}
+void dontClearAfter() {dont_clear_after = 1;}
 void noReturn() {no_return = 1;}
 void dontRepeat() {dont_repeat = 1;}
 void setReturnText(const std::string& text) {return_text = text;}
 
-void menuSettings(int dont_clear_, int no_return_, int dont_repeat_) {
+void menuSettings(int dont_clear_, int no_return_, int dont_repeat_, int dont_clear_after_) {
     dont_clear = dont_clear_;
     no_return = no_return_;
     dont_repeat = dont_repeat_;
+    dont_clear_after = dont_clear_after_;
 }
 
-void menuSettings(int dont_clear_, int no_return_, int dont_repeat_, const std::string& return_text_) {
-    menuSettings(dont_clear_, no_return_, dont_repeat_);
+void menuSettings(int dont_clear_, int no_return_, int dont_repeat_, int dont_clear_after_, const std::string& return_text_) {
+    menuSettings(dont_clear_, no_return_, dont_repeat_, dont_clear_after_);
     return_text = return_text_;
 }
 
@@ -1091,7 +1095,12 @@ void showMenu(const std::string& title, menu* options, int menu_width = MENU_WID
             continue;
         }
 
-        system("cls");
+        if (dont_clear_after != 1) {
+            system("cls");
+        } else {
+            dont_clear_after = 0;
+        }
+
         options[showMenu_findPosition(options, choice)].function();
         if (menu_return != 1) {
             waitEnter();
@@ -1231,7 +1240,12 @@ void showPageMenu(const std::string& title, page_menu* page, int menu_width = ME
             continue;
         }
 
-        system("cls");
+        if (dont_clear_after != 1) {
+            system("cls");
+        } else {
+            dont_clear_after = 0;
+        }
+
 
         page[current_page].options[showMenu_findPosition(page[current_page].options, choice)].function();
 
