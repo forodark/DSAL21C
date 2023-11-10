@@ -41,6 +41,7 @@ void peek() {
         return;
     }
     cout << "TOS -> " << MyStack[top] << endl;
+    printColor(GREEN, concat("Value: ", MyStack[top], "\nAddress: ", &MyStack[top], "\n"));
 }
 
 //4. Display your full name, course, and section, when the exit option is chosen
