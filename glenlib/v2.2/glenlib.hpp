@@ -752,20 +752,20 @@ void input(int& output, const std::string& prompt, int min = MIN_INT, int max = 
         
 
         if (input.empty()) {
-            invalid("Invalid input. Input must not be empty.\n");
+            invalid("Invalid input. Input must not be empty.");
         }
         else {
             try {
                 int temp = std::stoi(input);
                 if (temp < min || temp > max) {
-                    invalid("Invalid input. Input must be between " + std::to_string(min) + " and " + std::to_string(max) + ".\n");
+                    invalid("Invalid input. Input must be between " + std::to_string(min) + " and " + std::to_string(max) + ".");
                     continue;
                 }
                 output = temp;
                 return;
             }
             catch (const std::invalid_argument&) {
-                invalid("Invalid input. Input must be an integer.\n");
+                invalid("Invalid input. Input must be an integer.");
             }
         }
     }
@@ -779,20 +779,20 @@ void input(float& output, const std::string& prompt, float min = MIN_FLOAT, floa
         std::getline(std::cin, input);
         
         if (input.empty()) {
-            invalid("Invalid input. Input must not be empty.\n");
+            invalid("Invalid input. Input must not be empty.");
         }
         else {
             try {
                 float temp = std::stof(input);
                 if (temp < min || temp > max) {
-                    invalid("Invalid input. Input must be between " + std::to_string(min) + " and " + std::to_string(max) + ".\n");            
+                    invalid("Invalid input. Input must be between " + std::to_string(min) + " and " + std::to_string(max) + ".");            
                     continue;
                 }
                 output = temp;
                 return;
             }
             catch (const std::invalid_argument&) {
-                invalid("Invalid input. Please enter a valid float.\n");
+                invalid("Invalid input. Please enter a valid float.");
             }
         }
     }
@@ -807,20 +807,20 @@ void input(double& output, const std::string& prompt, double min = MIN_DOUBLE, d
         std::getline(std::cin, input);
         
         if (input.empty()) {
-            invalid("Invalid input. Input must not be empty.\n");
+            invalid("Invalid input. Input must not be empty.");
         }
         else {
             try {
                 double temp = std::stod(input);
                 if (temp < min || temp > max) {
-                    invalid("Invalid input. Input must be between " + std::to_string(min) + " and " + std::to_string(max) + ".\n");            
+                    invalid("Invalid input. Input must be between " + std::to_string(min) + " and " + std::to_string(max) + ".");            
                     continue;
                 }
                 output = temp;
                 return;
             }
             catch (const std::invalid_argument&) {
-                invalid("Invalid input. Please enter a valid double.\n");
+                invalid("Invalid input. Please enter a valid double.");
             }
         }
     }
@@ -835,14 +835,14 @@ void input(char& output, const std::string& prompt, const std::string& accepted 
         std::getline(std::cin, input);
         
         if (input.empty()) {
-            invalid("Invalid input. Input must not be empty.\n");
+            invalid("Invalid input. Input must not be empty.");
         }
         else if (input.length() != 1) {
-            invalid("Invalid input. Input must be a single character.\n");
+            invalid("Invalid input. Input must be a single character.");
         }
         else {
             if (accepted.find(input[0]) == std::string::npos) {
-                invalid("Invalid input. Input cannot be '" + input + "'.\n");
+                invalid("Invalid input. Input cannot be '" + input + "'.");
                 continue;
             }
             output = input[0];
@@ -859,9 +859,9 @@ void input(std::string& output, const std::string& prompt, const std::string& ac
         std::getline(std::cin, input);
 
         if (input.empty()) {
-            invalid("Invalid input. Input must not be empty.\n");
+            invalid("Invalid input. Input must not be empty.");
         } else if (input.length() < min_length || input.length() > max_length) {
-            invalid("Invalid input. Input must be between " + std::to_string(min_length) + " and " + std::to_string(max_length) + " characters.\n");
+            invalid("Invalid input. Input must be between " + std::to_string(min_length) + " and " + std::to_string(max_length) + " characters.");
         } else {
             bool is_invalid = false;
             std::string invalid_chars;
@@ -879,7 +879,7 @@ void input(std::string& output, const std::string& prompt, const std::string& ac
                 output = input;
                 return;
             } else {
-                invalid("Invalid input. Input cannot contain '" + invalid_chars + "'.\n");
+                invalid("Invalid input. Input cannot contain '" + invalid_chars + "'.");
             }
         }
     }
@@ -904,7 +904,7 @@ void input(bool& output, const std::string& prompt, const char default_choice_0 
             }
         }
         
-        invalid("Invalid input. Input must be '" + ctos(default_choice_0) + "' or '" + ctos(default_choice_1) + "'.\n");
+        invalid("Invalid input. Input must be '" + ctos(default_choice_0) + "' or '" + ctos(default_choice_1) + "'.");
     }
 }
 
