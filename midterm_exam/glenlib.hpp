@@ -24,6 +24,8 @@
 //      > dontClear
 //      > dontRepeat
 //      > menuSettings (set multiple)
+//      > dontClearAfter
+//      > dontClearMenu
 // Changes (v2.1)
 //  - Fixed bug in error message for getBool
 //  - added ctos function (char to string)
@@ -153,7 +155,7 @@ namespace gl {
 
 //Line Defaults
 static int default_line_width = 31;
-#define INVALID_CLEAR 5
+#define INVALID_CLEAR 4
 
 //Input Defaults
 #define INPUT_PROMPT "Input: "
@@ -428,16 +430,18 @@ void waitEnter() { //waits for user to press enter
 }
 
 // Sample: invalid("Invalid choice", 10);
-void invalid(const std::string& message, int width) { //returns invalid choice with custom parameters
+void invalid(const std::string& message, int width, bool clear_after = true) { //returns invalid choice with custom parameters
     Win::color(Win::RED, message);
     nl();
     line(width);
-    waitEnter();
-    clear(INVALID_CLEAR);
+    if(clear_after) {
+        waitEnter();
+        clear(INVALID_CLEAR);
+    }
 }
 
-void invalid(const std::string& message) {
-    invalid(message, default_line_width);
+void invalid(const std::string& message, bool clear_after = true) {
+    invalid(message, default_line_width, clear_after);
 }
 
 void invalid() {
@@ -751,20 +755,20 @@ void input(int& output, const std::string& prompt, int min = MIN_INT, int max = 
         
 
         if (input.empty()) {
-            invalid("Invalid input. Input must not be empty.\n");
+            invalid("Invalid input. Input must not be empty.");
         }
         else {
             try {
                 int temp = std::stoi(input);
                 if (temp < min || temp > max) {
-                    invalid("Invalid input. Input must be between " + std::to_string(min) + " and " + std::to_string(max) + ".\n");
+                    invalid("Invalid input. Input must be between " + std::to_string(min) + " and " + std::to_string(max) + ".");
                     continue;
                 }
                 output = temp;
                 return;
             }
             catch (const std::invalid_argument&) {
-                invalid("Invalid input. Input must be an integer.\n");
+                invalid("Invalid input. Input must be an integer.");
             }
         }
     }
@@ -778,20 +782,20 @@ void input(float& output, const std::string& prompt, float min = MIN_FLOAT, floa
         std::getline(std::cin, input);
         
         if (input.empty()) {
-            invalid("Invalid input. Input must not be empty.\n");
+            invalid("Invalid input. Input must not be empty.");
         }
         else {
             try {
                 float temp = std::stof(input);
                 if (temp < min || temp > max) {
-                    invalid("Invalid input. Input must be between " + std::to_string(min) + " and " + std::to_string(max) + ".\n");            
+                    invalid("Invalid input. Input must be between " + std::to_string(min) + " and " + std::to_string(max) + ".");            
                     continue;
                 }
                 output = temp;
                 return;
             }
             catch (const std::invalid_argument&) {
-                invalid("Invalid input. Please enter a valid float.\n");
+                invalid("Invalid input. Please enter a valid float.");
             }
         }
     }
@@ -806,20 +810,20 @@ void input(double& output, const std::string& prompt, double min = MIN_DOUBLE, d
         std::getline(std::cin, input);
         
         if (input.empty()) {
-            invalid("Invalid input. Input must not be empty.\n");
+            invalid("Invalid input. Input must not be empty.");
         }
         else {
             try {
                 double temp = std::stod(input);
                 if (temp < min || temp > max) {
-                    invalid("Invalid input. Input must be between " + std::to_string(min) + " and " + std::to_string(max) + ".\n");            
+                    invalid("Invalid input. Input must be between " + std::to_string(min) + " and " + std::to_string(max) + ".");            
                     continue;
                 }
                 output = temp;
                 return;
             }
             catch (const std::invalid_argument&) {
-                invalid("Invalid input. Please enter a valid double.\n");
+                invalid("Invalid input. Please enter a valid double.");
             }
         }
     }
@@ -834,14 +838,14 @@ void input(char& output, const std::string& prompt, const std::string& accepted 
         std::getline(std::cin, input);
         
         if (input.empty()) {
-            invalid("Invalid input. Input must not be empty.\n");
+            invalid("Invalid input. Input must not be empty.");
         }
         else if (input.length() != 1) {
-            invalid("Invalid input. Input must be a single character.\n");
+            invalid("Invalid input. Input must be a single character.");
         }
         else {
             if (accepted.find(input[0]) == std::string::npos) {
-                invalid("Invalid input. Input cannot be '" + input + "'.\n");
+                invalid("Invalid input. Input cannot be '" + input + "'.");
                 continue;
             }
             output = input[0];
@@ -858,9 +862,9 @@ void input(std::string& output, const std::string& prompt, const std::string& ac
         std::getline(std::cin, input);
 
         if (input.empty()) {
-            invalid("Invalid input. Input must not be empty.\n");
+            invalid("Invalid input. Input must not be empty.");
         } else if (input.length() < min_length || input.length() > max_length) {
-            invalid("Invalid input. Input must be between " + std::to_string(min_length) + " and " + std::to_string(max_length) + " characters.\n");
+            invalid("Invalid input. Input must be between " + std::to_string(min_length) + " and " + std::to_string(max_length) + " characters.");
         } else {
             bool is_invalid = false;
             std::string invalid_chars;
@@ -878,7 +882,7 @@ void input(std::string& output, const std::string& prompt, const std::string& ac
                 output = input;
                 return;
             } else {
-                invalid("Invalid input. Input cannot contain '" + invalid_chars + "'.\n");
+                invalid("Invalid input. Input cannot contain '" + invalid_chars + "'.");
             }
         }
     }
@@ -903,7 +907,7 @@ void input(bool& output, const std::string& prompt, const char default_choice_0 
             }
         }
         
-        invalid("Invalid input. Input must be '" + ctos(default_choice_0) + "' or '" + ctos(default_choice_1) + "'.\n");
+        invalid("Invalid input. Input must be '" + ctos(default_choice_0) + "' or '" + ctos(default_choice_1) + "'.");
     }
 }
 
@@ -991,26 +995,32 @@ const std::string RETURN_TEXT = "Return";
 
 int menu_return = 0;
 int end_menu = 0;
-int dont_clear = 0;
+int dont_clear_before = 0;
+int dont_clear_menu = 0;
+int dont_clear_after = 0;
 int no_return = 0;
 int dont_repeat = 0;
 std::string return_text = RETURN_TEXT;
 
 void dontWait() {menu_return = 1;}
 void quitMenu() {end_menu = 1;}
-void dontClear() {dont_clear = 1;}
+void dontClearBefore() {dont_clear_before = 1;}
+void dontClearMenu() {dont_clear_menu = 1;}
+void dontClearAfter() {dont_clear_after = 1;}
 void noReturn() {no_return = 1;}
 void dontRepeat() {dont_repeat = 1;}
 void setReturnText(const std::string& text) {return_text = text;}
 
-void menuSettings(int dont_clear_, int no_return_, int dont_repeat_) {
-    dont_clear = dont_clear_;
+void menuSettings(int dont_clear_before_, int no_return_, int dont_repeat_, int dont_clear_after_, int dont_clear_menu_) {
+    dont_clear_before = dont_clear_before_;
     no_return = no_return_;
     dont_repeat = dont_repeat_;
+    dont_clear_after = dont_clear_after_;
+    dont_clear_menu = dont_clear_menu_;
 }
 
-void menuSettings(int dont_clear_, int no_return_, int dont_repeat_, const std::string& return_text_) {
-    menuSettings(dont_clear_, no_return_, dont_repeat_);
+void menuSettings(int dont_clear_before_, int no_return_, int dont_repeat_, int dont_clear_after_, int dont_clear_menu_, const std::string& return_text_) {
+    menuSettings(dont_clear_before_, no_return_, dont_repeat_, dont_clear_after_, dont_clear_menu_);
     return_text = return_text_;
 }
 
@@ -1067,10 +1077,10 @@ void showMenu(const std::string& title, menu* options, int menu_width = MENU_WID
             end_menu = 0;
             return;
         }
-        if (dont_clear != 1) {
+        if (dont_clear_before != 1) {
             system("cls");
         } else {
-            dont_clear = 0;
+            dont_clear_before = 0;
         }
 
         int option_count = displayOptions(title, options, menu_width);
@@ -1091,11 +1101,20 @@ void showMenu(const std::string& title, menu* options, int menu_width = MENU_WID
             continue;
         }
 
-        system("cls");
+        if (dont_clear_menu != 1) {
+            system("cls");
+        } else {
+            dont_clear_menu = 0;
+        }
+
         options[showMenu_findPosition(options, choice)].function();
         if (menu_return != 1) {
             waitEnter();
-            system("cls");
+            if (dont_clear_after != 1) {
+                system("cls");
+            } else {
+                dont_clear_after = 0;
+            }
         }
 
         if (dont_repeat == 1) {
@@ -1231,14 +1250,23 @@ void showPageMenu(const std::string& title, page_menu* page, int menu_width = ME
             continue;
         }
 
-        system("cls");
+        if (dont_clear_menu != 1) {
+            system("cls");
+        } else {
+            dont_clear_menu = 0;
+        }
+
 
         page[current_page].options[showMenu_findPosition(page[current_page].options, choice)].function();
 
 
         if (menu_return != 1) {
             waitEnter();
-            system("cls");
+            if (dont_clear_after != 1) {
+                system("cls");
+            } else {
+                dont_clear_after = 0;
+            }
         }
 
         menu_return = 0;
