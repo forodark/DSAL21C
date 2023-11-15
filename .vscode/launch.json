@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/Glen/Documents/GitHub/DSAL21C/MP2",
-      "program": "c:/Users/Glen/Documents/GitHub/DSAL21C/MP2/build/Debug/outDebug",
+      "cwd": "m:/GitHub/DSAL21C/MP6",
+      "program": "m:/GitHub/DSAL21C/MP6/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
