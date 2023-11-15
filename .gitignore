@@ -1,3 +1,5 @@
+.vscode/
+
 glenlib/v1.0/Prog2.cpp
 glenlib/v1.0/Prog2.exe
 glenlib/v1.0/tempCodeRunnerFile.cpp
@@ -16,3 +18,4 @@ glenlib/v1.0/v0.6.1c (c)/glencrypt.h
 glenlib/v1.0/v0.6.1c (c)/tempCodeRunnerFile.h
 glenlib/v1.0/v0.6.1c (c)/test.c
 glenlib/v1.0/v0.6.1c (c)/test.exe
+
