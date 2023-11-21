@@ -62,7 +62,6 @@ void serve() {
 
 
 int main() {
-
     do {
         serve();
     } while (getBool("Do you want to try again? (y/n): ", 'n', 'y'));
