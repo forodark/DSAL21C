@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "m:/GitHub/DSAL21C/MP6",
-      "program": "m:/GitHub/DSAL21C/MP6/build/Debug/outDebug",
+      "cwd": "m:/GitHub/DSAL21C/QueuesLabExercises",
+      "program": "m:/GitHub/DSAL21C/QueuesLabExercises/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
