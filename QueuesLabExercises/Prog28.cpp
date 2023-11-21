@@ -11,23 +11,9 @@ const int QUEUE_SIZE = 5;
 
 class Queue {
     public:
-        int queue[QUEUE_SIZE];
-        int head = -1; //yoink
-        int tail = -1; //dagdag
-
-        boolean append(int value) {
-            if (tail + 1 >= QUEUE_SIZE) {
-                printColor(RED, "Error: Queue Overflow\n");
-                return false;
-            }
-            if (head == -1) {
-                head = 0;
-            }
-            tail++;
-            queue[tail] = value;
-            printColor(GREEN, concat("Successfully appended ", value, " to queue\n"));
-            return true;
-        }
+        int queue[QUEUE_SIZE] = {1,2,3,4,5};
+        int head = 0; //yoink
+        int tail = QUEUE_SIZE-1; //dagdag
 
         boolean serve() {
             if (tail == -1) {
@@ -76,11 +62,6 @@ void serve() {
 
 
 int main() {
-    MyQueue.append(1);
-    MyQueue.append(2);
-    MyQueue.append(3);
-    MyQueue.append(4);
-    MyQueue.append(5);
 
     do {
         serve();
